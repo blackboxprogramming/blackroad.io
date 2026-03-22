@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>BlackRoad OS Blog</title>
+    <link>https://blackroad.io/blog</link>
+    <description>Thoughts on sovereign AI, self-hosted infrastructure, and building the tools you actually own.</description>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 22 Mar 2026 00:00:00 GMT</lastBuildDate>
+    <atom:link href="https://blackroad.io/feed.xml" rel="self" type="application/rss+xml"/>
+    <image>
+      <url>https://images.blackroad.io/pixel-art/road-logo.png</url>
+      <title>BlackRoad OS Blog</title>
+      <link>https://blackroad.io/blog</link>
+    </image>
+
+    <item>
+      <title>Why I Quit Finance to Build an Operating System</title>
+      <link>https://blackroad.io/blog-quit-finance</link>
+      <guid isPermaLink="true">https://blackroad.io/blog-quit-finance</guid>
+      <pubDate>Sun, 22 Mar 2026 16:00:00 GMT</pubDate>
+      <author>amundsonalexa@gmail.com (Alexa Amundson)</author>
+      <category>founder-story</category>
+      <category>career-change</category>
+      <description>I had a Series 7, 63, and 65. I worked at Ameriprise and Securian. Then I built an AI operating system on Raspberry Pis for $38/month. Here's why the jump made more sense than it looks.</description>
+    </item>
+
+    <item>
+      <title>How I Built a Sovereign AI OS for $150/month</title>
+      <link>https://blackroad.io/blog-sovereign-os-150</link>
+      <guid isPermaLink="true">https://blackroad.io/blog-sovereign-os-150</guid>
+      <pubDate>Sun, 22 Mar 2026 00:00:00 GMT</pubDate>
+      <author>amundsonalexa@gmail.com (Alexa Amundson)</author>
+      <category>self-hosted</category>
+      <category>raspberry-pi</category>
+      <category>infrastructure</category>
+      <description>Five Raspberry Pis, two cloud droplets, 52 TOPS of AI inference, 18 production domains, 200 agents. The full breakdown of what it costs to own your entire stack.</description>
+    </item>
+
+    <item>
+      <title>What is BlackRoad OS and Why We Built It</title>
+      <link>https://blackroad.io/blog</link>
+      <guid isPermaLink="true">https://blackroad.io/blog</guid>
+      <pubDate>Sun, 22 Mar 2026 00:00:00 GMT</pubDate>
+      <author>amundsonalexa@gmail.com (Alexa Amundson)</author>
+      <category>sovereign-ai</category>
+      <category>self-hosted</category>
+      <description>The internet was supposed to be decentralized. Somewhere along the way, it became five companies and a login page. We're building the other thing.</description>
+    </item>
+
+  </channel>
+</rss>
