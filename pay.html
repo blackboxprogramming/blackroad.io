@@ -291,63 +291,62 @@
     <div class="container-wide">
       <div class="pricing-grid">
 
-        <!-- Starter -->
+        <!-- Operator -->
         <div class="pricing-card">
-          <div class="tier-name">Starter</div>
-          <div class="tier-desc">For individuals exploring BlackRoad OS</div>
+          <div class="tier-name">Operator</div>
+          <div class="tier-desc">Try everything. No credit card needed.</div>
           <div class="tier-price">
             <span class="amount">Free</span>
           </div>
           <ul class="tier-features">
-            <li>1 AI agent</li>
+            <li>Search, Chat, RoundTrip access</li>
+            <li>200 AI agents</li>
             <li>Community support</li>
-            <li>Basic CLI tools</li>
-            <li>5GB storage</li>
+            <li>No signup required</li>
           </ul>
           <div class="tier-cta">
-            <a href="/" class="cta-ghost">Get Started Free &rarr;</a>
+            <a href="https://search.blackroad.io" class="cta-ghost">Try It Free &rarr;</a>
           </div>
         </div>
 
-        <!-- Pro -->
+        <!-- Rider -->
         <div class="pricing-card popular">
           <div class="popular-badge">Popular</div>
-          <div class="tier-name">Pro</div>
-          <div class="tier-desc">For developers and small teams</div>
+          <div class="tier-name">Rider</div>
+          <div class="tier-desc">For developers and creators</div>
           <div class="tier-price">
-            <span class="amount">$19.99</span>
+            <span class="amount">$29</span>
             <span class="period">/mo</span>
           </div>
           <ul class="tier-features">
-            <li>10 AI agents</li>
-            <li>Priority support</li>
-            <li>Full CLI + API access</li>
-            <li>50GB storage</li>
+            <li>Everything in Operator</li>
+            <li>Priority AI inference</li>
+            <li>Full API access</li>
             <li>Custom agent training</li>
+            <li>Email support</li>
           </ul>
           <div class="tier-cta">
-            <a href="https://roadpay.amundsonalexa.workers.dev/checkout?plan=pro" class="cta-primary">Start Pro Trial &rarr;</a>
+            <a href="https://pay.blackroad.io" class="cta-primary">Start Rider &rarr;</a>
           </div>
         </div>
 
-        <!-- Enterprise -->
+        <!-- Paver -->
         <div class="pricing-card">
-          <div class="tier-name">Enterprise</div>
-          <div class="tier-desc">For organizations building on BlackRoad</div>
+          <div class="tier-name">Paver</div>
+          <div class="tier-desc">For teams and businesses</div>
           <div class="tier-price">
             <span class="amount">$99</span>
             <span class="period">/mo</span>
           </div>
           <ul class="tier-features">
-            <li>Unlimited agents</li>
-            <li>Dedicated support</li>
-            <li>Full fleet access</li>
-            <li>500GB storage</li>
-            <li>Custom models</li>
+            <li>Everything in Rider</li>
+            <li>Dedicated fleet capacity</li>
+            <li>Custom models on your hardware</li>
+            <li>Priority support</li>
             <li>SLA</li>
           </ul>
           <div class="tier-cta">
-            <a href="mailto:alexa@blackroad.io" class="cta-ghost">Contact Sales &rarr;</a>
+            <a href="mailto:alexa@blackroad.io" class="cta-ghost">Contact Us &rarr;</a>
           </div>
         </div>
 
@@ -367,32 +366,33 @@
           <thead>
             <tr>
               <th>Feature</th>
-              <th>Starter</th>
-              <th>Pro</th>
-              <th>Enterprise</th>
+              <th>Operator</th>
+              <th>Rider</th>
+              <th>Paver</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td>AI Agents</td>
-              <td>1</td>
-              <td>10</td>
-              <td>Unlimited</td>
+              <td>200 (shared)</td>
+              <td>200 (priority)</td>
+              <td>Dedicated</td>
             </tr>
             <tr>
-              <td>Storage</td>
-              <td>5 GB</td>
-              <td>50 GB</td>
-              <td>500 GB</td>
-            </tr>
-            <tr>
-              <td>CLI Tools</td>
-              <td class="check">Basic</td>
-              <td class="check">Full</td>
-              <td class="check">Full</td>
+              <td>Search + Chat</td>
+              <td class="check">Yes</td>
+              <td class="check">Yes</td>
+              <td class="check">Yes</td>
             </tr>
             <tr>
               <td>API Access</td>
+              <td class="dash">&mdash;</td>
+              <td class="check">Yes</td>
+              <td class="check">Yes</td>
+            </tr>
+            <tr>
+              <td>Custom Models</td>
+              <td class="dash">&mdash;</td>
               <td class="dash">&mdash;</td>
               <td class="check">Yes</td>
               <td class="check">Yes</td>
@@ -536,5 +536,7 @@
   </script>
 
 <script>if("serviceWorker" in navigator)navigator.serviceWorker.register("/sw.js").catch(()=>{});</script>
+<script src="/_shared/feedback.js" defer></script>
+<script src="/_shared/crosslinks.js" defer></script>
 </body>
 </html>
