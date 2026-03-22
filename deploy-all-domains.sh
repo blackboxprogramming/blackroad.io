@@ -101,8 +101,8 @@ for domain in "${DOMAINS[@]}"; do
     <a href="https://blackroad.io">Main App</a>
     <a href="https://core.blackroad.systems/api/docs">API Docs</a>
     <div class="krak">
-      <p>💸 Send me money on Krak!</p>
-      <a href="https://krak.app/AAAAAAAA" target="_blank">Tap here to try →</a>
+      <p>BlackRoad OS — Pave Tomorrow.</p>
+      <a href="https://blackroad.io" target="_blank">Learn More →</a>
     </div>
   </div>
 </body>

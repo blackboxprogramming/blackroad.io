@@ -278,7 +278,6 @@ Colors:
 4. Test checkout flow
 
 ### Crypto Payments
-- **Krak**: https://krak.app/AAAAAAAA
 - **Bitcoin**: `3NJYuq8KA1xBea6JNg32XgDwjpvLkrR5VH`
 - **Coinbase**: Wallet ID `7fe12e7c-e76e-5c28-bbd7-5e7fed78e1f1`
 - **Ledger**: WebUSB integration in `ledger.html`
