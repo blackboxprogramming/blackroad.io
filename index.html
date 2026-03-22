@@ -177,6 +177,7 @@
     .cta-band h2 { margin-bottom: var(--sp-md); }
     .cta-band p { max-width: 500px; margin: 0 auto var(--sp-xl); }
   </style>
+  <link rel="alternate" type="application/rss+xml" title="BlackRoad OS Blog" href="/feed.xml">
   <script src="https://blackroad-mesh.amundsonalexa.workers.dev/mesh.js" defer></script>
   <script type="application/ld+json">
   {
@@ -190,7 +191,7 @@
       "@type": "Person",
       "name": "Alexa Louise Amundson"
     },
-    "description": "Sovereign AI operating system. 200 agents on self-hosted Raspberry Pi hardware.",
+    "description": "Sovereign AI operating system running on 5 Raspberry Pis with 52 TOPS AI inference. Self-hosted Git, DNS, AI, storage, chat, and 200 autonomous agents for $63/month.",
     "address": {
       "@type": "PostalAddress",
       "addressRegion": "DE",
@@ -198,8 +199,41 @@
     },
     "sameAs": [
       "https://github.com/BlackRoad-OS-Inc",
-      "https://github.com/BlackRoad-OS"
+      "https://github.com/BlackRoad-OS",
+      "https://social.blackroad.io"
     ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "BlackRoad OS",
+    "url": "https://blackroad.io",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://search.blackroad.io?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "BlackRoad OS",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Linux (Raspberry Pi OS)",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "description": "Sovereign AI operating system. Self-hosted infrastructure on commodity hardware.",
+    "author": {
+      "@type": "Organization",
+      "name": "BlackRoad OS, Inc."
+    }
   }
   </script>
 </head>
@@ -494,5 +528,6 @@
   </footer>
 
 <script>if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(()=>{});</script>
+<script src="/_shared/feedback.js" defer></script>
 </body>
 </html>
