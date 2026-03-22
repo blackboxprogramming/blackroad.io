@@ -14,6 +14,18 @@
     </image>
 
     <item>
+      <title>The Amundson Sequence — A New Identity in Number Theory</title>
+      <link>https://blackroad.io/blog-amundson-sequence</link>
+      <guid isPermaLink="true">https://blackroad.io/blog-amundson-sequence</guid>
+      <pubDate>Sun, 22 Mar 2026 20:00:00 GMT</pubDate>
+      <author>amundsonalexa@gmail.com (Alexa Amundson)</author>
+      <category>mathematics</category>
+      <category>number-theory</category>
+      <category>amundson-constant</category>
+      <description>G(n) = n^(n+1)/(n+1)^n. 50+ verified identities connecting combinatorics, analysis, and number theory. Convergence constant computed to 10 million digits on a Raspberry Pi cluster.</description>
+    </item>
+
+    <item>
       <title>How I Built a Search Engine on Raspberry Pis</title>
       <link>https://blackroad.io/blog-search-engine-pis</link>
       <guid isPermaLink="true">https://blackroad.io/blog-search-engine-pis</guid>
