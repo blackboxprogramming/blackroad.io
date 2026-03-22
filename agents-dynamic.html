@@ -3,514 +3,572 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🤖 Live Agent Dashboard - BlackRoad OS</title>
+  <meta name="description" content="BlackRoad OS Agent Spawner — Create, monitor, and manage AI agents in real time.">
+  <meta name="theme-color" content="#0a0a0a">
+  <meta property="og:title" content="Agent Spawner — BlackRoad OS">
+  <meta property="og:description" content="Spawn and manage AI agents on the BlackRoad mesh.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://blackroad.io/agents-dynamic.html">
+  <title>Agent Spawner — BlackRoad OS</title>
+  <link rel="stylesheet" href="/_shared/design.css">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    :root {
-      --gradient: linear-gradient(135deg, #FF9D00, #FF6B00, #FF0066, #D600AA, #7700FF, #0066FF);
-    }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #02030a;
-      color: white;
-      min-height: 100vh;
-      overflow-x: hidden;
+    .spawner-layout {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: var(--sp-xl) var(--sp-lg);
     }
 
-    /* Navigation */
-    #blackroad-nav { position: sticky; top: 0; z-index: 1000; }
-
-    /* Header Stats */
-    .stats-header {
-      padding: 32px;
-      background: linear-gradient(180deg, rgba(119, 0, 255, 0.2) 0%, transparent 100%);
-      border-bottom: 2px solid rgba(119, 0, 255, 0.3);
-    }
-    .stats-grid {
+    /* Stats bar */
+    .stats-bar {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 24px;
-      max-width: 1400px;
-      margin: 0 auto;
-    }
-    .stat-card {
-      background: rgba(255,255,255,0.05);
-      border: 2px solid rgba(255,255,255,0.1);
-      border-radius: 16px;
-      padding: 24px;
-      text-align: center;
-      transition: all 0.3s;
-    }
-    .stat-card:hover {
-      border-color: #7700FF;
-      transform: translateY(-4px);
-    }
-    .stat-value {
-      font-size: 48px;
-      font-weight: 900;
-      background: var(--gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 8px;
-    }
-    .stat-label {
-      font-size: 14px;
-      opacity: 0.7;
-      text-transform: uppercase;
-      letter-spacing: 1px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--sp-md);
+      margin-bottom: var(--sp-xl);
     }
 
-    /* Main Content */
-    .container {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 48px 32px;
-    }
-
-    /* Spawn Panel */
-    .spawn-panel {
-      background: rgba(255,255,255,0.05);
-      border: 2px solid rgba(119, 0, 255, 0.5);
-      border-radius: 16px;
-      padding: 32px;
-      margin-bottom: 48px;
-    }
-    .spawn-panel h2 {
-      font-size: 32px;
-      margin-bottom: 24px;
-      background: var(--gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
+    /* Form */
     .spawn-form {
       display: grid;
-      grid-template-columns: 1fr 1fr auto;
-      gap: 16px;
-      margin-bottom: 16px;
+      gap: var(--sp-md);
     }
-    input, select {
-      padding: 14px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.2);
-      background: rgba(255,255,255,0.05);
-      color: white;
-      font-size: 16px;
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--sp-md);
     }
-    input:focus, select:focus {
-      outline: none;
-      border-color: #7700FF;
-    }
-    .spawn-btn {
-      padding: 14px 32px;
-      border-radius: 12px;
-      border: none;
-      background: var(--gradient);
-      color: white;
-      font-weight: 700;
-      cursor: pointer;
-      transition: transform 0.2s;
-      font-size: 16px;
-    }
-    .spawn-btn:hover {
-      transform: scale(1.05);
-    }
-    .quick-spawn {
+    .form-group {
       display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
+      flex-direction: column;
+      gap: var(--sp-xs);
     }
-    .quick-btn {
-      padding: 8px 16px;
-      border-radius: 8px;
-      border: 1px solid rgba(255,255,255,0.3);
-      background: rgba(255,255,255,0.1);
-      color: white;
+    .form-group label {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      background: var(--inset);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-input);
+      padding: 12px 14px;
+      color: var(--white);
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--violet);
+    }
+    .form-group select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23525252'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 36px;
       cursor: pointer;
-      font-size: 14px;
-      transition: all 0.2s;
     }
-    .quick-btn:hover {
-      background: rgba(119, 0, 255, 0.3);
-      border-color: #7700FF;
+    .form-group textarea {
+      resize: vertical;
+      min-height: 80px;
+      font-family: var(--font-body);
+    }
+    .form-group select option {
+      background: var(--surface);
+      color: var(--white);
     }
 
-    /* Agents Grid */
+    .spawn-btn {
+      width: 100%;
+      justify-content: center;
+      font-family: var(--font-headline);
+      font-size: 1rem;
+      padding: 16px;
+    }
+
+    /* Agent cards */
+    .agents-section-title {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-sm);
+      margin-bottom: var(--sp-md);
+    }
     .agents-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 24px;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: var(--sp-md);
     }
     .agent-card {
-      background: rgba(255,255,255,0.05);
-      border: 2px solid rgba(255,255,255,0.1);
-      border-radius: 16px;
-      padding: 24px;
-      transition: all 0.3s;
-      animation: slideIn 0.5s ease-out;
+      position: relative;
     }
-    @keyframes slideIn {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+    .agent-card .agent-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: var(--sp-sm);
     }
-    .agent-card:hover {
-      border-color: #7700FF;
-      transform: translateY(-4px);
-      box-shadow: 0 12px 24px rgba(119, 0, 255, 0.3);
+    .agent-card .agent-name {
+      font-family: var(--font-headline);
+      font-weight: 700;
+      font-size: 1rem;
     }
-    .agent-header {
+    .agent-card .agent-role {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--subtle);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-top: 2px;
+    }
+    .agent-card .agent-model {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: var(--sp-xs);
+    }
+    .agent-card .agent-desc {
+      font-size: 0.8rem;
+      color: var(--tertiary);
+      margin-top: var(--sp-sm);
+      line-height: 1.5;
+    }
+    .agent-card .agent-footer {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 16px;
+      margin-top: var(--sp-md);
+      padding-top: var(--sp-sm);
+      border-top: 1px solid var(--border);
     }
-    .agent-id {
-      font-family: monospace;
-      font-size: 12px;
-      opacity: 0.5;
+    .agent-card .agent-uptime {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--subtle);
     }
-    .agent-role {
-      font-size: 20px;
-      font-weight: 700;
-      margin: 8px 0;
-    }
-    .agent-status {
-      display: inline-block;
-      padding: 4px 12px;
-      border-radius: 12px;
-      font-size: 12px;
-      font-weight: 600;
-    }
-    .status-active {
-      background: rgba(0, 255, 136, 0.2);
-      color: #00ff88;
-      border: 1px solid #00ff88;
-    }
-    .status-idle {
-      background: rgba(255, 157, 0, 0.2);
-      color: #FF9D00;
-      border: 1px solid #FF9D00;
-    }
-    .agent-capabilities {
-      margin: 12px 0;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-    .capability-tag {
-      padding: 4px 8px;
-      background: rgba(119, 0, 255, 0.2);
-      border: 1px solid rgba(119, 0, 255, 0.5);
-      border-radius: 6px;
-      font-size: 12px;
-    }
-    .agent-time {
-      font-size: 12px;
-      opacity: 0.6;
-      margin-top: 8px;
-    }
-    .agent-actions {
-      margin-top: 16px;
-      display: flex;
-      gap: 8px;
-    }
-    .action-btn {
-      padding: 8px 16px;
-      border-radius: 8px;
-      border: none;
-      background: rgba(255,255,255,0.1);
-      color: white;
-      font-size: 12px;
+    .btn-terminate {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 12px;
+      border-radius: var(--radius-small);
+      border: 1px solid #ef444466;
+      background: transparent;
+      color: #ef4444;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: background 0.2s, border-color 0.2s;
     }
-    .action-btn:hover {
-      background: rgba(255, 0, 102, 0.3);
+    .btn-terminate:hover {
+      background: #ef444418;
+      border-color: #ef4444;
     }
-
-    /* Loading */
-    .loading {
-      text-align: center;
-      padding: 48px;
-      opacity: 0.7;
-    }
-    .spinner {
-      display: inline-block;
-      width: 40px;
-      height: 40px;
-      border: 4px solid rgba(255,255,255,0.1);
-      border-top-color: #7700FF;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
+    .system-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: var(--radius-small);
+      background: var(--inset);
+      border: 1px solid var(--border);
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      color: var(--subtle);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
     }
 
-    /* Empty State */
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 16px 24px;
+      font-size: 0.85rem;
+      color: var(--white);
+      z-index: 1000;
+      transform: translateY(120%);
+      opacity: 0;
+      transition: transform 0.3s var(--ease-spring), opacity 0.3s;
+      max-width: 360px;
+    }
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    .toast .toast-title {
+      font-family: var(--font-headline);
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .toast .toast-body {
+      font-size: 0.8rem;
+      color: var(--tertiary);
+    }
+    .toast-bar {
+      height: 2px;
+      background: var(--grad);
+      margin-top: 12px;
+      border-radius: 1px;
+      animation: toast-drain 3s linear forwards;
+    }
+    @keyframes toast-drain {
+      from { width: 100%; }
+      to { width: 0; }
+    }
+
     .empty-state {
       text-align: center;
-      padding: 64px 32px;
-      opacity: 0.7;
+      padding: var(--sp-xl) var(--sp-lg);
+      color: var(--muted);
+      font-size: 0.85rem;
     }
-    .empty-state h3 {
-      font-size: 24px;
-      margin-bottom: 16px;
+
+    @media (max-width: 560px) {
+      .stats-bar { grid-template-columns: 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+      .agents-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
-  <!-- Navigation -->
-  <div id="blackroad-nav"></div>
 
-  <!-- Stats Header -->
-  <div class="stats-header">
-    <div class="stats-grid">
+  <!-- Nav -->
+  <nav class="br-nav">
+    <a href="/" class="nav-brand">
+      <div class="spectrum-mark">
+        <span></span><span></span><span></span><span></span><span></span><span></span>
+      </div>
+      Agent Spawner
+    </a>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/agents-live.html">Live Agents</a>
+      <a href="/dashboard.html">Dashboard</a>
+    </div>
+  </nav>
+
+  <div class="grad-bar"></div>
+
+  <div class="spawner-layout">
+
+    <!-- Stats Bar -->
+    <div class="stats-bar">
       <div class="stat-card">
-        <div class="stat-value" id="totalAgents">0</div>
+        <div class="stat-value" id="stat-total">0</div>
         <div class="stat-label">Total Agents</div>
       </div>
       <div class="stat-card">
-        <div class="stat-value" id="activeAgents">0</div>
-        <div class="stat-label">Active Now</div>
+        <div class="stat-value" id="stat-user">0</div>
+        <div class="stat-label">User Spawned</div>
       </div>
       <div class="stat-card">
-        <div class="stat-value" id="yourAgents">0</div>
-        <div class="stat-label">Your Agents</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-value" id="systemUptime">100%</div>
-        <div class="stat-label">System Uptime</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Main Content -->
-  <div class="container">
-    <!-- Spawn Panel -->
-    <div class="spawn-panel">
-      <h2>🚀 Spawn New Agent</h2>
-      <div class="spawn-form">
-        <input type="text" id="agentRole" placeholder="Agent Role (e.g., Financial Analyst)" />
-        <select id="agentPack">
-          <option value="">Select Pack (Optional)</option>
-          <option value="pack-finance">Finance</option>
-          <option value="pack-legal">Legal</option>
-          <option value="pack-research-lab">Research</option>
-          <option value="pack-creator-studio">Creator</option>
-          <option value="pack-infra-devops">DevOps</option>
-        </select>
-        <button class="spawn-btn" onclick="spawnAgent()">Spawn Agent</button>
-      </div>
-      <div style="margin-top: 16px; opacity: 0.7; font-size: 14px;">
-        Quick Spawn:
-      </div>
-      <div class="quick-spawn">
-        <button class="quick-btn" onclick="quickSpawn('Data Analyst', 'pack-research-lab')">📊 Data Analyst</button>
-        <button class="quick-btn" onclick="quickSpawn('Crypto Trader', 'pack-finance')">💰 Crypto Trader</button>
-        <button class="quick-btn" onclick="quickSpawn('Code Reviewer', 'pack-infra-devops')">👨‍💻 Code Reviewer</button>
-        <button class="quick-btn" onclick="quickSpawn('Content Creator', 'pack-creator-studio')">✍️ Content Creator</button>
-        <button class="quick-btn" onclick="quickSpawn('Legal Advisor', 'pack-legal')">⚖️ Legal Advisor</button>
-        <button class="quick-btn" onclick="quickSpawn('General Assistant', '')">🤖 General</button>
+        <div class="stat-value" id="stat-system">0</div>
+        <div class="stat-label">System Agents</div>
       </div>
     </div>
 
-    <!-- Agents Grid -->
-    <div id="agentsList">
-      <div class="loading">
-        <div class="spinner"></div>
-        <p style="margin-top: 16px;">Loading agents...</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- BlackRoad API -->
-  <script src="/blackroad-api.js"></script>
-  <script src="/blackroad-nav.js"></script>
-  <script>
-    let agents = [];
-    let autoRefresh = true;
-
-    // Initialize
-    async function init() {
-      await loadAgents();
-      await updateStats();
-
-      // Auto-refresh every 5 seconds
-      setInterval(() => {
-        if (autoRefresh) {
-          loadAgents();
-          updateStats();
-        }
-      }, 5000);
-    }
-
-    // Load agents from backend
-    async function loadAgents() {
-      try {
-        const data = await window.blackroad.listAgents();
-        agents = data.agents || [];
-        renderAgents();
-        return data;
-      } catch (error) {
-        console.error('Failed to load agents:', error);
-        document.getElementById('agentsList').innerHTML = `
-          <div class="empty-state">
-            <h3>Unable to connect to backend</h3>
-            <p>Make sure the API is running at localhost:8000</p>
-            <button class="spawn-btn" onclick="init()">Retry</button>
+    <!-- Spawn Form -->
+    <section>
+      <div class="section-label">Deploy</div>
+      <h2 class="section-title">Create a New Agent</h2>
+      <form class="spawn-form" id="spawn-form" autocomplete="off">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="agent-name">Agent Name</label>
+            <input type="text" id="agent-name" placeholder="e.g. Sentinel" required>
           </div>
-        `;
-      }
-    }
-
-    // Render agents
-    function renderAgents() {
-      const container = document.getElementById('agentsList');
-
-      if (agents.length === 0) {
-        container.innerHTML = `
-          <div class="empty-state">
-            <h3>No agents spawned yet</h3>
-            <p>Click "Spawn Agent" above to create your first AI agent!</p>
-          </div>
-        `;
-        return;
-      }
-
-      container.innerHTML = `<div class="agents-grid">${
-        agents.map(agent => createAgentCard(agent)).join('')
-      }</div>`;
-    }
-
-    // Create agent card HTML
-    function createAgentCard(agent) {
-      const elapsed = getElapsedTime(agent.created_at);
-      const capabilities = agent.capabilities || ['general'];
-
-      return `
-        <div class="agent-card" data-agent-id="${agent.id}">
-          <div class="agent-header">
-            <span class="agent-status status-${agent.status}">${agent.status}</span>
-            <span class="agent-id">${agent.id.substring(0, 12)}...</span>
-          </div>
-          <div class="agent-role">🤖 ${agent.role}</div>
-          ${agent.pack ? `<div style="opacity: 0.7; font-size: 13px;">📦 ${agent.pack}</div>` : ''}
-          <div class="agent-capabilities">
-            ${capabilities.map(cap => `<span class="capability-tag">${cap}</span>`).join('')}
-          </div>
-          <div class="agent-time">Spawned ${elapsed}</div>
-          <div class="agent-actions">
-            <button class="action-btn" onclick="viewAgent('${agent.id}')">View</button>
-            <button class="action-btn" onclick="terminateAgent('${agent.id}')">Terminate</button>
+          <div class="form-group">
+            <label for="agent-role">Role</label>
+            <select id="agent-role" required>
+              <option value="" disabled selected>Select role</option>
+              <option value="Gateway">Gateway</option>
+              <option value="Memory">Memory</option>
+              <option value="Search">Search</option>
+              <option value="Monitor">Monitor</option>
+              <option value="Creative">Creative</option>
+              <option value="Security">Security</option>
+              <option value="Infrastructure">Infrastructure</option>
+            </select>
           </div>
         </div>
-      `;
-    }
+        <div class="form-row">
+          <div class="form-group">
+            <label for="agent-model">Model</label>
+            <select id="agent-model" required>
+              <option value="" disabled selected>Select model</option>
+              <option value="llama3.2">llama3.2</option>
+              <option value="mistral">mistral</option>
+              <option value="gemma2">gemma2</option>
+              <option value="deepseek-r1">deepseek-r1</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="agent-desc">Description</label>
+            <textarea id="agent-desc" placeholder="What does this agent do?"></textarea>
+          </div>
+        </div>
+        <button type="submit" class="btn-primary spawn-btn">Spawn Agent</button>
+      </form>
+    </section>
 
-    // Spawn new agent
-    async function spawnAgent() {
-      const role = document.getElementById('agentRole').value.trim();
-      const pack = document.getElementById('agentPack').value;
+    <div class="grad-bar"></div>
 
-      if (!role) {
-        alert('Please enter an agent role');
-        return;
+    <!-- Running Agents (user-spawned) -->
+    <section>
+      <div class="agents-section-title">
+        <div class="section-label" style="margin-bottom:0">Your Agents</div>
+        <span class="live-indicator">live</span>
+      </div>
+      <div class="agents-grid" id="user-agents-grid">
+        <div class="empty-state">No agents spawned yet. Use the form above to create one.</div>
+      </div>
+    </section>
+
+    <div class="grad-bar"></div>
+
+    <!-- System Agents -->
+    <section>
+      <div class="agents-section-title">
+        <div class="section-label" style="margin-bottom:0">System Agents</div>
+        <span class="system-badge">read-only</span>
+      </div>
+      <div class="agents-grid" id="system-agents-grid">
+        <div class="empty-state skeleton" style="height:120px"></div>
+        <div class="empty-state skeleton" style="height:120px"></div>
+        <div class="empty-state skeleton" style="height:120px"></div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer -->
+  <div class="grad-bar"></div>
+  <footer>
+    <span>BlackRoad OS — Pave Tomorrow.</span>
+    <span class="text-mono">agent-spawner v1.0</span>
+  </footer>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">
+    <div class="toast-title" id="toast-title"></div>
+    <div class="toast-body" id="toast-body"></div>
+    <div class="toast-bar"></div>
+  </div>
+
+  <script>
+    (() => {
+      'use strict';
+
+      const LS_KEY = 'blackroad_spawned_agents';
+      const SYSTEM_API = 'https://blackroad-live-stats.amundsonalexa.workers.dev/api/agents';
+
+      // ── State ──
+      let userAgents = loadUserAgents();
+      let systemAgents = [];
+      let uptimeIntervals = {};
+
+      // ── LocalStorage ──
+      function loadUserAgents() {
+        try {
+          const raw = localStorage.getItem(LS_KEY);
+          return raw ? JSON.parse(raw) : [];
+        } catch { return []; }
       }
 
-      if (!window.blackroad.isAuthenticated()) {
-        alert('Please login first');
-        window.location.href = '/';
-        return;
+      function saveUserAgents() {
+        localStorage.setItem(LS_KEY, JSON.stringify(userAgents));
       }
 
-      try {
-        const capabilities = ['general'];
-        const data = await window.blackroad.spawnAgent(role, capabilities, pack || null);
+      // ── Toast ──
+      function showToast(title, body) {
+        const el = document.getElementById('toast');
+        document.getElementById('toast-title').textContent = title;
+        document.getElementById('toast-body').textContent = body;
+        // Reset animation
+        const bar = el.querySelector('.toast-bar');
+        bar.style.animation = 'none';
+        void bar.offsetHeight;
+        bar.style.animation = '';
+        el.classList.add('show');
+        setTimeout(() => el.classList.remove('show'), 3200);
+      }
 
-        // Add to local list immediately for instant feedback
-        agents.unshift(data.agent);
-        renderAgents();
+      // ── Uptime formatting ──
+      function formatUptime(ms) {
+        const s = Math.floor(ms / 1000);
+        const h = Math.floor(s / 3600);
+        const m = Math.floor((s % 3600) / 60);
+        const sec = s % 60;
+        const pad = n => String(n).padStart(2, '0');
+        return `${pad(h)}:${pad(m)}:${pad(sec)}`;
+      }
 
-        // Clear form
-        document.getElementById('agentRole').value = '';
-        document.getElementById('agentPack').value = '';
+      // ── Stats ──
+      function updateStats() {
+        document.getElementById('stat-user').textContent = userAgents.length;
+        document.getElementById('stat-system').textContent = systemAgents.length;
+        document.getElementById('stat-total').textContent = userAgents.length + systemAgents.length;
+      }
 
-        // Update stats
+      // ── Render user agents ──
+      function renderUserAgents() {
+        const grid = document.getElementById('user-agents-grid');
+
+        // Clear old intervals
+        Object.values(uptimeIntervals).forEach(clearInterval);
+        uptimeIntervals = {};
+
+        if (userAgents.length === 0) {
+          grid.innerHTML = '<div class="empty-state">No agents spawned yet. Use the form above to create one.</div>';
+          updateStats();
+          return;
+        }
+
+        grid.innerHTML = '';
+        userAgents.forEach(agent => {
+          const card = document.createElement('div');
+          card.className = 'card agent-card';
+          card.innerHTML = `
+            <div class="agent-header">
+              <div>
+                <div class="agent-name">${escapeHtml(agent.name)}</div>
+                <div class="agent-role">${escapeHtml(agent.role)}</div>
+              </div>
+              <span class="tag"><span class="status-dot live"></span> active</span>
+            </div>
+            <div class="agent-model">model: ${escapeHtml(agent.model)}</div>
+            ${agent.description ? `<div class="agent-desc">${escapeHtml(agent.description)}</div>` : ''}
+            <div class="agent-footer">
+              <span class="agent-uptime" data-uptime-id="${agent.id}">00:00:00</span>
+              <button class="btn-terminate" data-agent-id="${agent.id}">Terminate</button>
+            </div>
+          `;
+          grid.appendChild(card);
+
+          // Start uptime counter
+          const uptimeEl = card.querySelector(`[data-uptime-id="${agent.id}"]`);
+          const updateUptime = () => {
+            uptimeEl.textContent = formatUptime(Date.now() - agent.spawnedAt);
+          };
+          updateUptime();
+          uptimeIntervals[agent.id] = setInterval(updateUptime, 1000);
+
+          // Terminate handler
+          card.querySelector(`[data-agent-id="${agent.id}"]`).addEventListener('click', () => {
+            if (!confirm(`Terminate agent "${agent.name}"? This cannot be undone.`)) return;
+            userAgents = userAgents.filter(a => a.id !== agent.id);
+            saveUserAgents();
+            renderUserAgents();
+            showToast('Agent Terminated', `${agent.name} has been shut down.`);
+          });
+        });
+
         updateStats();
-
-        alert(`✓ Agent spawned successfully!\nID: ${data.agent_id}\nRole: ${role}`);
-      } catch (error) {
-        alert('Failed to spawn agent: ' + error.message);
       }
-    }
 
-    // Quick spawn
-    async function quickSpawn(role, pack) {
-      document.getElementById('agentRole').value = role;
-      document.getElementById('agentPack').value = pack;
-      await spawnAgent();
-    }
+      // ── Render system agents ──
+      function renderSystemAgents(agents) {
+        const grid = document.getElementById('system-agents-grid');
+        if (!agents || agents.length === 0) {
+          grid.innerHTML = '<div class="empty-state">No system agents found.</div>';
+          return;
+        }
+        grid.innerHTML = '';
+        agents.forEach(agent => {
+          const card = document.createElement('div');
+          card.className = 'card agent-card';
+          const name = agent.name || agent.id || 'Unknown';
+          const role = agent.role || agent.type || 'System';
+          const model = agent.model || 'system';
+          const status = agent.status || 'active';
+          const dotClass = status === 'active' || status === 'online' ? 'live' : status === 'idle' ? 'warning' : 'offline';
+          card.innerHTML = `
+            <div class="agent-header">
+              <div>
+                <div class="agent-name">${escapeHtml(name)}</div>
+                <div class="agent-role">${escapeHtml(role)}</div>
+              </div>
+              <span class="tag"><span class="status-dot ${dotClass}"></span> ${escapeHtml(status)}</span>
+            </div>
+            <div class="agent-model">model: ${escapeHtml(model)}</div>
+            <div class="agent-footer">
+              <span class="system-badge">system agent</span>
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+      }
 
-    // Terminate agent
-    async function terminateAgent(agentId) {
-      if (!confirm('Are you sure you want to terminate this agent?')) return;
-
-      try {
-        await window.blackroad.terminateAgent(agentId);
-        agents = agents.filter(a => a.id !== agentId);
-        renderAgents();
+      // ── Fetch system agents ──
+      async function fetchSystemAgents() {
+        try {
+          const res = await fetch(SYSTEM_API);
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const data = await res.json();
+          systemAgents = Array.isArray(data) ? data : (data.agents || data.data || []);
+          renderSystemAgents(systemAgents);
+        } catch (err) {
+          console.warn('Could not fetch system agents:', err.message);
+          const grid = document.getElementById('system-agents-grid');
+          grid.innerHTML = '<div class="empty-state">Unable to reach system agents endpoint.</div>';
+          systemAgents = [];
+        }
         updateStats();
-        alert('Agent terminated');
-      } catch (error) {
-        alert('Failed to terminate agent: ' + error.message);
       }
-    }
 
-    // View agent details
-    function viewAgent(agentId) {
-      const agent = agents.find(a => a.id === agentId);
-      if (!agent) return;
-
-      alert(`Agent Details:\n\nID: ${agent.id}\nRole: ${agent.role}\nStatus: ${agent.status}\nCapabilities: ${agent.capabilities.join(', ')}\nPack: ${agent.pack || 'None'}\nCreated: ${new Date(agent.created_at).toLocaleString()}`);
-    }
-
-    // Update stats
-    async function updateStats() {
-      try {
-        const stats = await window.blackroad.getSystemStats();
-        document.getElementById('totalAgents').textContent = stats.total_agents;
-        document.getElementById('activeAgents').textContent = stats.active_agents;
-        document.getElementById('yourAgents').textContent = agents.length;
-        document.getElementById('systemUptime').textContent = stats.uptime;
-      } catch (error) {
-        console.error('Failed to update stats:', error);
+      // ── Escape HTML ──
+      function escapeHtml(str) {
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
       }
-    }
 
-    // Utility: Get elapsed time
-    function getElapsedTime(timestamp) {
-      const now = new Date();
-      const created = new Date(timestamp);
-      const diff = now - created;
-      const seconds = Math.floor(diff / 1000);
-      const minutes = Math.floor(seconds / 60);
-      const hours = Math.floor(minutes / 60);
-      const days = Math.floor(hours / 24);
+      // ── Form submit ──
+      document.getElementById('spawn-form').addEventListener('submit', e => {
+        e.preventDefault();
+        const name = document.getElementById('agent-name').value.trim();
+        const role = document.getElementById('agent-role').value;
+        const model = document.getElementById('agent-model').value;
+        const description = document.getElementById('agent-desc').value.trim();
 
-      if (days > 0) return `${days}d ago`;
-      if (hours > 0) return `${hours}h ago`;
-      if (minutes > 0) return `${minutes}m ago`;
-      return `${seconds}s ago`;
-    }
+        if (!name || !role || !model) return;
 
-    // Initialize on load
-    init();
+        const agent = {
+          id: 'usr_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8),
+          name,
+          role,
+          model,
+          description,
+          status: 'active',
+          spawnedAt: Date.now()
+        };
+
+        userAgents.push(agent);
+        saveUserAgents();
+        renderUserAgents();
+        showToast('Agent Spawned', `${name} is now running on ${model}.`);
+
+        // Reset form
+        e.target.reset();
+      });
+
+      // ── Init ──
+      renderUserAgents();
+      fetchSystemAgents();
+
+      // Refresh system agents every 30s
+      setInterval(fetchSystemAgents, 30000);
+    })();
   </script>
 </body>
 </html>

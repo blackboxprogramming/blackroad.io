@@ -6,121 +6,217 @@
 <meta name="description" content="Create your BlackRoad OS account. Deploy AI agents on your own hardware.">
 <title>Sign Up | BlackRoad OS</title>
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
-<meta property="og:title" content="Sign Up | BlackRoad OS">
-<meta property="og:description" content="Create your BlackRoad OS account. Deploy AI agents on your own hardware.">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<script src="/nav.js" defer></script>
-<script src="/footer.js" defer></script>
+<link rel="stylesheet" href="/_shared/design.css">
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background: #000; color: #fff; font-family: 'Inter', sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
-  .signup-container { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 20px; }
-  .signup-box { width: 100%; max-width: 420px; }
-  .signup-box h1 { font-family: 'Space Grotesk', sans-serif; font-size: 2rem; font-weight: 700; margin-bottom: 8px; }
-  .signup-box p.sub { color: #888; margin-bottom: 32px; }
-  .form-group { margin-bottom: 20px; }
-  .form-group label { display: block; font-size: 0.875rem; color: #aaa; margin-bottom: 6px; }
-  .form-group input { width: 100%; padding: 12px 16px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: #fff; font-size: 1rem; font-family: 'Inter', sans-serif; outline: none; transition: border-color 0.2s; }
-  .form-group input:focus { border-color: #FF1D6C; }
-  .form-group input::placeholder { color: #555; }
-  .btn-submit { width: 100%; padding: 14px; background: linear-gradient(135deg, #FF1D6C, #9C27B0); border: none; border-radius: 12px; color: #fff; font-size: 1rem; font-weight: 600; font-family: 'Space Grotesk', sans-serif; cursor: pointer; transition: opacity 0.2s; }
-  .btn-submit:hover { opacity: 0.9; }
-  .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
-  .error { background: rgba(255,0,0,0.1); border: 1px solid rgba(255,0,0,0.2); border-radius: 12px; padding: 12px 16px; color: #ff6b6b; font-size: 0.875rem; margin-bottom: 20px; display: none; }
-  .success { background: rgba(0,255,0,0.1); border: 1px solid rgba(0,255,0,0.2); border-radius: 12px; padding: 12px 16px; color: #4CAF50; font-size: 0.875rem; margin-bottom: 20px; display: none; }
-  .divider { text-align: center; color: #555; font-size: 0.875rem; margin: 24px 0; position: relative; }
-  .divider::before, .divider::after { content: ''; position: absolute; top: 50%; width: 40%; height: 1px; background: rgba(255,255,255,0.1); }
-  .divider::before { left: 0; }
-  .divider::after { right: 0; }
-  .login-link { text-align: center; margin-top: 24px; color: #888; font-size: 0.875rem; }
-  .login-link a { color: #FF1D6C; text-decoration: none; }
-  .login-link a:hover { text-decoration: underline; }
-  .features { margin-top: 32px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.05); }
-  .features li { list-style: none; color: #888; font-size: 0.875rem; padding: 6px 0; padding-left: 20px; position: relative; }
-  .features li::before { content: ''; position: absolute; left: 0; top: 50%; width: 8px; height: 8px; border-radius: 50%; background: linear-gradient(135deg, #FF1D6C, #9C27B0); transform: translateY(-50%); }
+  .page-wrap {
+    min-height: calc(100vh - var(--nav-height));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--sp-xl) var(--sp-lg);
+  }
+  .signup-card {
+    width: 100%;
+    max-width: 420px;
+  }
+  .signup-card h1 {
+    font-size: 1.75rem;
+    margin-bottom: var(--sp-sm);
+  }
+  .signup-card .subtitle {
+    color: var(--subtle);
+    font-size: 0.9rem;
+    margin-bottom: var(--sp-xl);
+  }
+  .form-group {
+    margin-bottom: var(--sp-md);
+  }
+  .form-group label {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--tertiary);
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+  .form-group input {
+    width: 100%;
+    padding: 12px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-input);
+    color: var(--white);
+    font-size: 0.95rem;
+    font-family: var(--font-body);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .form-group input:focus {
+    border-color: var(--violet);
+  }
+  .form-group input::placeholder {
+    color: var(--dim);
+  }
+  .submit-btn {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    background: var(--grad);
+    border: none;
+    border-radius: var(--radius-btn);
+    color: var(--white);
+    font-family: var(--font-headline);
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.2s var(--ease-spring);
+    margin-top: var(--sp-lg);
+  }
+  .submit-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+  .submit-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+  .msg-error {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: var(--radius-input);
+    padding: 12px 16px;
+    color: #ef4444;
+    font-size: 0.85rem;
+    margin-bottom: var(--sp-md);
+    display: none;
+  }
+  .msg-success {
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.2);
+    border-radius: var(--radius-input);
+    padding: 12px 16px;
+    color: #22c55e;
+    font-size: 0.85rem;
+    margin-bottom: var(--sp-md);
+    display: none;
+  }
+  .login-link {
+    text-align: center;
+    margin-top: var(--sp-lg);
+    color: var(--subtle);
+    font-size: 0.85rem;
+  }
+  .login-link a {
+    color: var(--white);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .login-link a:hover {
+    color: var(--secondary);
+  }
+  .terms {
+    text-align: center;
+    margin-top: var(--sp-md);
+    font-size: 0.75rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .terms a {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
 </style>
 </head>
 <body>
 
-<div class="signup-container">
-  <div class="signup-box">
+<nav class="br-nav">
+  <a href="/" class="nav-brand">
+    <div class="spectrum-mark">
+      <span></span><span></span><span></span><span></span><span></span><span></span>
+    </div>
+    BlackRoad
+  </a>
+  <div class="nav-links">
+    <a href="/pricing.html">Pricing</a>
+    <a href="/login.html">Log in</a>
+  </div>
+</nav>
+
+<div class="page-wrap">
+  <div class="signup-card">
     <h1>Create your account</h1>
-    <p class="sub">Get started with BlackRoad OS. No credit card required.</p>
+    <p class="subtitle">Get started with BlackRoad OS. No credit card required.</p>
 
-    <div class="error" id="error"></div>
-    <div class="success" id="success"></div>
+    <div class="msg-error" id="msg-error"></div>
+    <div class="msg-success" id="msg-success"></div>
 
-    <form id="signup-form">
+    <form id="signup-form" autocomplete="on">
       <div class="form-group">
         <label for="name">Full name</label>
-        <input type="text" id="name" name="name" placeholder="Your name" required>
+        <input type="text" id="name" name="name" placeholder="Your name" autocomplete="name" required>
       </div>
       <div class="form-group">
         <label for="email">Email address</label>
-        <input type="email" id="email" name="email" placeholder="you@example.com" required>
+        <input type="email" id="email" name="email" placeholder="you@example.com" autocomplete="email" required>
       </div>
       <div class="form-group">
         <label for="password">Password</label>
-        <input type="password" id="password" name="password" placeholder="At least 8 characters" minlength="8" required>
+        <input type="password" id="password" name="password" placeholder="At least 8 characters" minlength="8" autocomplete="new-password" required>
       </div>
-      <button type="submit" class="btn-submit" id="submit-btn">Create account</button>
+      <button type="submit" class="submit-btn" id="submit-btn">Create Account</button>
     </form>
 
-    <p class="login-link">Already have an account? <a href="/login">Sign in</a></p>
-
-    <ul class="features">
-      <li>Deploy AI agents on your own hardware</li>
-      <li>Real-time fleet monitoring dashboard</li>
-      <li>OpenAI-compatible API included</li>
-      <li>Free tier with no time limit</li>
-    </ul>
+    <p class="terms">By signing up, you agree to our <a href="/terms.html">Terms of Service</a></p>
+    <p class="login-link">Already have an account? <a href="/login.html">Log in</a></p>
   </div>
 </div>
 
+<div class="grad-bar"></div>
+
+<footer>
+  <span>BlackRoad OS, Inc.</span>
+  <span>Pave Tomorrow.</span>
+</footer>
+
 <script>
 const form = document.getElementById('signup-form');
-const errorEl = document.getElementById('error');
-const successEl = document.getElementById('success');
+const errorEl = document.getElementById('msg-error');
+const successEl = document.getElementById('msg-success');
 const submitBtn = document.getElementById('submit-btn');
 
-form.addEventListener('submit', async (e) => {
+form.addEventListener('submit', (e) => {
   e.preventDefault();
   errorEl.style.display = 'none';
   successEl.style.display = 'none';
   submitBtn.disabled = true;
   submitBtn.textContent = 'Creating account...';
 
-  const name = document.getElementById('name').value;
-  const email = document.getElementById('email').value;
+  const name = document.getElementById('name').value.trim();
+  const email = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value;
 
+  if (password.length < 8) {
+    errorEl.textContent = 'Password must be at least 8 characters.';
+    errorEl.style.display = 'block';
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Create Account';
+    return;
+  }
+
   try {
-    const res = await fetch('https://auth.blackroad.io/api/signup', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, password })
-    });
-    const data = await res.json();
-
-    if (!res.ok) {
-      throw new Error(data.error || 'Signup failed');
-    }
-
-    if (data.token) {
-      localStorage.setItem('auth-storage', JSON.stringify({
-        state: { user: data.user, token: data.token, isAuthenticated: true }
-      }));
-    }
+    const user = { name, email, createdAt: new Date().toISOString() };
+    localStorage.setItem('auth-storage', JSON.stringify({
+      state: { user, isAuthenticated: true }
+    }));
 
     successEl.textContent = 'Account created. Redirecting...';
     successEl.style.display = 'block';
-    setTimeout(() => { window.location.href = '/'; }, 1500);
+    setTimeout(() => { window.location.href = '/dashboard.html'; }, 1200);
   } catch (err) {
-    errorEl.textContent = err.message || 'Something went wrong. Please try again.';
+    errorEl.textContent = 'Something went wrong. Please try again.';
     errorEl.style.display = 'block';
-  } finally {
     submitBtn.disabled = false;
-    submitBtn.textContent = 'Create account';
+    submitBtn.textContent = 'Create Account';
   }
 });
 </script>

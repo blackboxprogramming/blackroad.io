@@ -3,235 +3,456 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BlackRoad Integrations</title>
+  <title>Integrations — BlackRoad OS</title>
+  <meta name="description" content="BlackRoad OS integrates with your existing tools and infrastructure. 18 live integrations, 100% self-hosted, zero cloud lock-in.">
+  <meta name="theme-color" content="#0a0a0a">
+  <meta property="og:title" content="BlackRoad Ecosystem — Integrations">
+  <meta property="og:description" content="Everything connects. 18 live integrations, 100% self-hosted.">
+  <meta property="og:type" content="website">
+  <link rel="stylesheet" href="/_shared/design.css">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    :root { --gradient: linear-gradient(135deg, #FF9D00, #FF6B00, #FF0066, #D600AA, #7700FF, #0066FF); }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #02030a;
-      color: white;
-      min-height: 100vh;
-      padding: 48px 24px;
+    /* ── Filter Tabs ── */
+    .filter-bar {
+      display: flex;
+      gap: var(--sp-sm);
+      flex-wrap: wrap;
+      margin-bottom: var(--sp-xl);
     }
-    .container { max-width: 1200px; margin: 0 auto; }
-    h1 {
-      font-size: 56px;
-      font-weight: 900;
-      background: var(--gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 48px;
+    .filter-tab {
+      padding: 8px 18px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--subtle);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
-    .integration-grid {
+    .filter-tab:hover {
+      border-color: var(--border-hover);
+      color: var(--white);
+    }
+    .filter-tab.active {
+      background: var(--surface);
+      border-color: var(--border-hover);
+      color: var(--white);
+    }
+
+    /* ── Integration Grid ── */
+    .integrations-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-      gap: 24px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--sp-lg);
     }
+
+    /* ── Integration Card ── */
     .integration-card {
-      background: rgba(255,255,255,0.05);
-      border: 2px solid rgba(255,255,255,0.1);
-      border-radius: 16px;
-      padding: 32px;
-      transition: all 0.3s;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: var(--sp-lg);
+      transition: border-color 0.2s, transform 0.25s var(--ease-spring), opacity 0.3s;
     }
     .integration-card:hover {
-      transform: translateY(-4px);
-      border-color: #7700FF;
-      box-shadow: 0 12px 24px rgba(119, 0, 255, 0.2);
+      border-color: var(--border-hover);
+      transform: translateY(-2px);
     }
-    .integration-card h2 {
-      font-size: 28px;
-      margin-bottom: 16px;
+    .integration-card.hidden {
+      display: none;
+    }
+    .integration-card .card-icon {
+      font-size: 1.75rem;
+      margin-bottom: var(--sp-md);
+      display: block;
+      line-height: 1;
+    }
+    .integration-card .card-header {
       display: flex;
       align-items: center;
-      gap: 12px;
+      justify-content: space-between;
+      margin-bottom: var(--sp-sm);
     }
-    .integration-card p {
-      opacity: 0.8;
-      margin-bottom: 16px;
+    .integration-card h3 {
+      font-family: var(--font-headline);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--white);
+    }
+    .integration-card .card-desc {
+      font-size: 0.85rem;
+      color: var(--subtle);
+      line-height: 1.5;
+    }
+
+    /* ── Status Badges ── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: var(--radius-pill);
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+    }
+    .badge-live {
+      background: rgba(34, 197, 94, 0.12);
+      color: #22c55e;
+      border: 1px solid rgba(34, 197, 94, 0.2);
+    }
+    .badge-live::before {
+      content: '';
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 6px #22c55e66;
+    }
+    .badge-soon {
+      background: rgba(245, 158, 11, 0.12);
+      color: #f59e0b;
+      border: 1px solid rgba(245, 158, 11, 0.2);
+    }
+    .badge-selfhosted {
+      background: rgba(136, 68, 255, 0.12);
+      color: #8844FF;
+      border: 1px solid rgba(136, 68, 255, 0.2);
+    }
+
+    /* ── Stats Bar ── */
+    .stats-bar {
+      display: flex;
+      justify-content: center;
+      gap: var(--sp-xl);
+      padding: var(--sp-xl) var(--sp-lg);
+      margin-top: var(--sp-xl);
+    }
+    .stats-bar .stat-item {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--subtle);
+      display: flex;
+      align-items: center;
+      gap: var(--sp-sm);
+    }
+    .stats-bar .stat-item strong {
+      color: var(--white);
+      font-weight: 700;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      text-align: center;
+      padding: var(--sp-2xl) var(--sp-lg);
+    }
+    .hero h1 {
+      margin-bottom: var(--sp-md);
+    }
+    .hero .subtitle {
+      font-size: 1.1rem;
+      color: var(--subtle);
+      max-width: 520px;
+      margin: 0 auto;
       line-height: 1.6;
     }
-    .credential {
-      background: rgba(0,0,0,0.3);
-      padding: 12px;
-      border-radius: 8px;
-      margin: 8px 0;
-      font-family: monospace;
-      font-size: 13px;
-      word-break: break-all;
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .integrations-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
     }
-    .credential strong {
-      color: #FF9D00;
-      display: block;
-      margin-bottom: 4px;
-    }
-    .action-btn {
-      display: inline-block;
-      padding: 12px 24px;
-      background: var(--gradient);
-      color: white;
-      text-decoration: none;
-      border-radius: 8px;
-      font-weight: 700;
-      margin-top: 16px;
-      transition: transform 0.2s;
-    }
-    .action-btn:hover {
-      transform: scale(1.05);
-    }
-    .status {
-      display: inline-block;
-      padding: 4px 12px;
-      border-radius: 12px;
-      font-size: 12px;
-      font-weight: 700;
-      background: rgba(0, 255, 136, 0.2);
-      color: #00ff88;
+    @media (max-width: 560px) {
+      .integrations-grid {
+        grid-template-columns: 1fr;
+      }
+      .stats-bar {
+        flex-direction: column;
+        align-items: center;
+        gap: var(--sp-md);
+      }
+      .hero {
+        padding: var(--sp-xl) var(--sp-md);
+      }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>🔗 BlackRoad Integrations</h1>
 
-    <div class="integration-grid">
-      <!-- ChatGPT Integration -->
-      <div class="integration-card">
-        <h2>🤖 ChatGPT GPT</h2>
-        <span class="status">ACTIVE</span>
-        <p>BlackRoad custom GPT for AI assistance</p>
-        <div class="credential">
-          <strong>GPT Link:</strong>
-          https://chatgpt.com/gg/v/692fab57cf908190aa5c5093d9e7062f?token=CVJdnasjoe7q8QcYWvcpGw
-        </div>
-        <a href="https://chatgpt.com/gg/v/692fab57cf908190aa5c5093d9e7062f?token=CVJdnasjoe7q8QcYWvcpGw" target="_blank" class="action-btn">Open GPT →</a>
+  <!-- ── Nav ── -->
+  <nav class="br-nav">
+    <a href="/" class="nav-brand">
+      <div class="spectrum-mark">
+        <span></span><span></span><span></span><span></span><span></span><span></span>
       </div>
-
-      <!-- Discord Integration -->
-      <div class="integration-card">
-        <h2>💬 Discord Server</h2>
-        <span class="status">ACTIVE</span>
-        <p>Join the BlackRoad community</p>
-        <div class="credential">
-          <strong>Discord Invite:</strong>
-          https://discord.gg/KfXxKKnSd
-        </div>
-        <a href="https://discord.gg/KfXxKKnSd" target="_blank" class="action-btn">Join Server →</a>
-      </div>
-
-      <!-- Google Drive Integration -->
-      <div class="integration-card">
-        <h2>☁️ Google Drive</h2>
-        <span class="status">ACTIVE</span>
-        <p>Cloud storage and file sharing</p>
-        <div class="credential">
-          <strong>Shared Link:</strong>
-          https://share.google/c7c3UKwt8oEAH5xns
-        </div>
-        <a href="https://share.google/c7c3UKwt8oEAH5xns" target="_blank" class="action-btn">Open Drive →</a>
-      </div>
-
-      <!-- Coinbase Integration -->
-      <div class="integration-card">
-        <h2>🪙 Coinbase Wallet</h2>
-        <span class="status">ACTIVE</span>
-        <p>Crypto wallet and exchange</p>
-        <div class="credential">
-          <strong>API Key:</strong>
-          ed448886c62e6aedf6e7a490cb8e9adcbb0be76d32f1bab8b979c0d433981752
-        </div>
-        <div class="credential">
-          <strong>Wallet ID:</strong>
-          7fe12e7c-e76e-5c28-bbd7-5e7fed78e1f1
-        </div>
-        <div class="credential">
-          <strong>Email:</strong>
-          amundsonalexa@gmail.com
-        </div>
-        <a href="https://www.coinbase.com" target="_blank" class="action-btn">Open Coinbase →</a>
-      </div>
-
-      <!-- GeckoTerminal Integration -->
-      <div class="integration-card">
-        <h2>🦎 GeckoTerminal</h2>
-        <span class="status">ACTIVE</span>
-        <p>Real-time crypto trading terminal</p>
-        <div class="credential">
-          <strong>Account:</strong>
-          amundsonalexa@gmail.com
-        </div>
-        <a href="https://www.geckoterminal.com" target="_blank" class="action-btn">Open Terminal →</a>
-      </div>
-
-      <!-- Ledger Hardware Wallet -->
-      <div class="integration-card">
-        <h2>🔐 Ledger Wallet</h2>
-        <span class="status">CONNECTED</span>
-        <p>Hardware wallet via USB-C</p>
-        <div class="credential">
-          <strong>Connection:</strong>
-          USB-C (Hardware wallet)
-        </div>
-        <div class="credential">
-          <strong>Status:</strong>
-          Physical device connected
-        </div>
-        <button onclick="connectLedger()" class="action-btn">Connect Ledger →</button>
-      </div>
-
-      <!-- Payment Methods -->
-      <div class="integration-card">
-        <h2>💸 Payment Methods</h2>
-        <span class="status">ACTIVE</span>
-        <p>Accept payments via multiple channels</p>
-        <div class="credential">
-          <strong>Krak:</strong>
-          https://krak.app/AAAAAAAA
-        </div>
-        <div class="credential">
-          <strong>Bitcoin:</strong>
-          3NJYuq8KA1xBea6JNg32XgDwjpvLkrR5VH
-        </div>
-        <div class="credential">
-          <strong>Stripe:</strong>
-          pk_test_51QTdFgP9LkdZ0rQk8kLPHxZMqB8LkMbQNE09vzZYNQz2AxRpG3yVRpLhHOtJdhCvK1hkWlJlV1EFLb5yh3Dq7NU600wLO0Bupq
-        </div>
-      </div>
+      BlackRoad Ecosystem
+    </a>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/dashboard.html">Dashboard</a>
+      <a href="/docs.html">Docs</a>
     </div>
-  </div>
+  </nav>
+
+  <!-- ── Hero ── -->
+  <section class="hero">
+    <h1>Everything connects.</h1>
+    <p class="subtitle">BlackRoad OS integrates with your existing tools and infrastructure.</p>
+  </section>
+
+  <div class="grad-bar"></div>
+
+  <!-- ── Main Content ── -->
+  <section>
+    <div class="container-wide">
+
+      <!-- ── Filter Tabs ── -->
+      <div class="filter-bar" role="tablist">
+        <button class="filter-tab active" data-filter="all" role="tab" aria-selected="true">All</button>
+        <button class="filter-tab" data-filter="infrastructure" role="tab">Infrastructure</button>
+        <button class="filter-tab" data-filter="ai" role="tab">AI</button>
+        <button class="filter-tab" data-filter="developer" role="tab">Developer Tools</button>
+        <button class="filter-tab" data-filter="communication" role="tab">Communication</button>
+        <button class="filter-tab" data-filter="storage" role="tab">Storage</button>
+      </div>
+
+      <!-- ── Integration Grid ── -->
+      <div class="integrations-grid" id="grid">
+
+        <!-- Gitea -->
+        <div class="integration-card" data-category="developer">
+          <span class="card-icon">&#128230;</span>
+          <div class="card-header">
+            <h3>Gitea</h3>
+            <span class="badge badge-live">Live</span>
+          </div>
+          <p class="card-desc">Self-hosted Git forge with 239 repos across 8 orgs</p>
+        </div>
+
+        <!-- Ollama -->
+        <div class="integration-card" data-category="ai">
+          <span class="card-icon">&#129302;</span>
+          <div class="card-header">
+            <h3>Ollama</h3>
+            <span class="badge badge-live">Live</span>
+          </div>
+          <p class="card-desc">Local AI inference across 4 nodes with 16 models</p>
+        </div>
+
+        <!-- WireGuard -->
+        <div class="integration-card" data-category="infrastructure">
+          <span class="card-icon">&#128274;</span>
+          <div class="card-header">
+            <h3>WireGuard</h3>
+            <span class="badge badge-live">Live</span>
+          </div>
+          <p class="card-desc">Encrypted VPN mesh connecting all nodes</p>
+        </div>
+
+        <!-- MinIO -->
+        <div class="integration-card" data-category="storage">
+          <span class="card-icon">&#128451;</span>
+          <div class="card-header">
+            <h3>MinIO</h3>
+            <span class="badge badge-live">Live</span>
+          </div>
+          <p class="card-desc">S3-compatible object storage for assets and backups</p>
+        </div>
+
+        <!-- PostgreSQL -->
+        <div class="integration-card" data-category="storage">
+          <span class="card-icon">&#128450;</span>
+          <div class="card-header">
+            <h3>PostgreSQL</h3>
+            <span class="badge badge-live">Live</span>
+          </div>
+          <p class="card-desc">Primary relational database on 3 nodes</p>
+        </div>
+
+        <!-- Redis -->
+        <div class="integration-card" data-category="storage">
+          <span class="card-icon">&#9889;</span>
+          <div class="card-header">
+            <h3>Redis</h3>
+            <span class="badge badge-live">Live</span>
+          </div>
+          <p class="card-desc">In-memory cache and session store</p>
+        </div>
+
+        <!-- PowerDNS -->
+        <div class="integration-card" data-category="infrastructure">
+          <span class="card-icon">&#127760;</span>
+          <div class="card-header">
+            <h3>PowerDNS</h3>
+            <span class="badge badge-selfhosted">Self-Hosted</span>
+          </div>
+          <p class="card-desc">Authoritative DNS for all BlackRoad domains</p>
+        </div>
+
+        <!-- Caddy -->
+        <div class="integration-card" data-category="infrastructure">
+          <span class="card-icon">&#128737;</span>
+          <div class="card-header">
+            <h3>Caddy</h3>
+            <span class="badge badge-live">Live</span>
+          </div>
+          <p class="card-desc">Automatic TLS edge serving 151 domains</p>
+        </div>
+
+        <!-- NATS -->
+        <div class="integration-card" data-category="communication">
+          <span class="card-icon">&#128232;</span>
+          <div class="card-header">
+            <h3>NATS</h3>
+            <span class="badge badge-live">Live</span>
+          </div>
+          <p class="card-desc">Lightweight message mesh for agent communication</p>
+        </div>
+
+        <!-- Pi-hole -->
+        <div class="integration-card" data-category="infrastructure">
+          <span class="card-icon">&#128683;</span>
+          <div class="card-header">
+            <h3>Pi-hole</h3>
+            <span class="badge badge-live">Live</span>
+          </div>
+          <p class="card-desc">Network-wide ad blocking and DNS sinkhole</p>
+        </div>
+
+        <!-- Qdrant -->
+        <div class="integration-card" data-category="ai">
+          <span class="card-icon">&#128269;</span>
+          <div class="card-header">
+            <h3>Qdrant</h3>
+            <span class="badge badge-live">Live</span>
+          </div>
+          <p class="card-desc">Vector search engine for RAG and semantic queries</p>
+        </div>
+
+        <!-- Docker -->
+        <div class="integration-card" data-category="developer">
+          <span class="card-icon">&#128227;</span>
+          <div class="card-header">
+            <h3>Docker</h3>
+            <span class="badge badge-live">Live</span>
+          </div>
+          <p class="card-desc">Container runtime for isolated service deployments</p>
+        </div>
+
+        <!-- Stripe -->
+        <div class="integration-card" data-category="infrastructure">
+          <span class="card-icon">&#128179;</span>
+          <div class="card-header">
+            <h3>Stripe</h3>
+            <span class="badge badge-live">Live</span>
+          </div>
+          <p class="card-desc">Payment processing for subscriptions and invoices</p>
+        </div>
+
+        <!-- GitHub -->
+        <div class="integration-card" data-category="developer">
+          <span class="card-icon">&#128025;</span>
+          <div class="card-header">
+            <h3>GitHub</h3>
+            <span class="badge badge-live">Live</span>
+          </div>
+          <p class="card-desc">Mirror host synced from Gitea across 17 orgs</p>
+        </div>
+
+        <!-- Cloudflare -->
+        <div class="integration-card" data-category="infrastructure">
+          <span class="card-icon">&#9729;</span>
+          <div class="card-header">
+            <h3>Cloudflare</h3>
+            <span class="badge badge-live">Live</span>
+          </div>
+          <p class="card-desc">Legacy CDN and DNS being migrated to self-hosted</p>
+        </div>
+
+        <!-- Hailo-8 -->
+        <div class="integration-card" data-category="ai">
+          <span class="card-icon">&#129518;</span>
+          <div class="card-header">
+            <h3>Hailo-8</h3>
+            <span class="badge badge-selfhosted">Self-Hosted</span>
+          </div>
+          <p class="card-desc">52 TOPS AI accelerator across 2 edge nodes</p>
+        </div>
+
+        <!-- n8n -->
+        <div class="integration-card" data-category="developer">
+          <span class="card-icon">&#9881;</span>
+          <div class="card-header">
+            <h3>n8n</h3>
+            <span class="badge badge-soon">Coming Soon</span>
+          </div>
+          <p class="card-desc">Visual workflow automation for fleet orchestration</p>
+        </div>
+
+        <!-- Grafana -->
+        <div class="integration-card" data-category="infrastructure">
+          <span class="card-icon">&#128200;</span>
+          <div class="card-header">
+            <h3>Grafana</h3>
+            <span class="badge badge-soon">Coming Soon</span>
+          </div>
+          <p class="card-desc">Monitoring and observability dashboards</p>
+        </div>
+
+      </div>
+
+      <!-- ── Stats Bar ── -->
+      <div class="stats-bar">
+        <div class="stat-item"><strong>18</strong> live integrations</div>
+        <div class="stat-item"><strong>100%</strong> self-hosted</div>
+        <div class="stat-item"><strong>Zero</strong> cloud lock-in</div>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="grad-bar"></div>
+
+  <!-- ── Footer ── -->
+  <footer>
+    <span>BlackRoad OS, Inc.</span>
+    <span>Pave Tomorrow.</span>
+  </footer>
 
   <script>
-    async function connectLedger() {
-      try {
-        if (!navigator.usb) {
-          alert('WebUSB not supported. Use Chrome/Edge browser.');
-          return;
-        }
+    /* ── Filter Logic ── */
+    const tabs = document.querySelectorAll('.filter-tab');
+    const cards = document.querySelectorAll('.integration-card');
 
-        const device = await navigator.usb.requestDevice({
-          filters: [{ vendorId: 0x2c97 }] // Ledger vendor ID
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
+        tab.classList.add('active');
+        tab.setAttribute('aria-selected', 'true');
+
+        const filter = tab.dataset.filter;
+
+        cards.forEach(card => {
+          if (filter === 'all' || card.dataset.category === filter) {
+            card.classList.remove('hidden');
+            card.style.animation = 'fadeIn 0.3s ease forwards';
+          } else {
+            card.classList.add('hidden');
+          }
         });
+      });
+    });
 
-        await device.open();
-        await device.selectConfiguration(1);
-        await device.claimInterface(0);
-
-        alert('Ledger connected successfully! Device: ' + device.productName);
-        
-        // Store connection
-        localStorage.setItem('ledger_connected', 'true');
-        
-      } catch (error) {
-        console.error('Ledger connection failed:', error);
-        alert('Failed to connect Ledger: ' + error.message);
-      }
-    }
-
-    // Check for stored Ledger connection
-    if (localStorage.getItem('ledger_connected')) {
-      console.log('Ledger was previously connected');
-    }
+    /* ── Fade-in keyframe ── */
+    const style = document.createElement('style');
+    style.textContent = '@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }';
+    document.head.appendChild(style);
   </script>
+
 </body>
 </html>

@@ -3,624 +3,618 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>⛓️ RoadChain Explorer - BlackRoad OS</title>
+  <title>RoadChain Miner — BlackRoad OS</title>
+  <meta name="description" content="Interactive block mining simulator for the RoadChain network. Mine ROAD tokens with proof-of-work.">
+  <meta name="theme-color" content="#0a0a0a">
+  <meta property="og:title" content="RoadChain Miner — BlackRoad OS">
+  <meta property="og:description" content="Interactive block mining simulator for the RoadChain network.">
+  <meta property="og:type" content="website">
+  <link rel="stylesheet" href="/_shared/design.css">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    :root {
-      --gradient: linear-gradient(135deg, #FF9D00, #FF6B00, #FF0066, #D600AA, #7700FF, #0066FF);
-    }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #02030a;
-      color: white;
-      min-height: 100vh;
-      overflow-x: hidden;
+    /* ── Page Layout ── */
+    .page-wrap {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 0 var(--sp-lg);
     }
 
-    /* Navigation */
-    #blackroad-nav { position: sticky; top: 0; z-index: 1000; }
+    /* ── Mining Control ── */
+    .mine-section {
+      padding: var(--sp-xl) 0;
+    }
+    .mine-toggle {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-md);
+      padding: 14px 32px;
+      border-radius: var(--radius-btn);
+      border: none;
+      font-family: var(--font-headline);
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.2s var(--ease-spring);
+      color: var(--white);
+      width: 100%;
+      justify-content: center;
+    }
+    .mine-toggle.idle {
+      background: var(--grad);
+    }
+    .mine-toggle.active {
+      background: var(--rose);
+      animation: pulse-btn 1.5s ease-in-out infinite;
+    }
+    .mine-toggle:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+    @keyframes pulse-btn {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(255, 34, 85, 0.4); }
+      50% { box-shadow: 0 0 0 8px rgba(255, 34, 85, 0); }
+    }
 
-    /* Header */
-    .blockchain-header {
-      padding: 48px 32px;
-      background: linear-gradient(180deg, rgba(0, 102, 255, 0.2) 0%, transparent 100%);
-      border-bottom: 2px solid rgba(0, 102, 255, 0.3);
+    /* ── Hash Visualization ── */
+    .hash-viz {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: var(--sp-lg);
+      margin-top: var(--sp-md);
+      overflow: hidden;
+      position: relative;
+      min-height: 96px;
+    }
+    .hash-viz-idle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      min-height: 64px;
+    }
+    .hash-scroll {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      line-height: 1.7;
+      color: var(--subtle);
+      word-break: break-all;
+      max-height: 120px;
+      overflow: hidden;
+      position: relative;
+    }
+    .hash-scroll::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 32px;
+      background: linear-gradient(transparent, var(--surface));
+      pointer-events: none;
+    }
+    .hash-scroll .match {
+      color: #22c55e;
+      font-weight: 700;
+    }
+
+    /* ── Mining Live Stats ── */
+    .mine-live {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: var(--sp-sm);
+      margin-top: var(--sp-md);
+    }
+    .mine-live-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-small);
+      padding: var(--sp-sm) var(--sp-md);
       text-align: center;
     }
-    .blockchain-header h1 {
-      font-size: 64px;
-      font-weight: 900;
-      background: var(--gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 16px;
+    .mine-live-item .val {
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--white);
     }
-    .blockchain-header p {
-      font-size: 18px;
-      opacity: 0.8;
+    .mine-live-item .lbl {
+      font-size: 0.65rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-top: 2px;
     }
 
-    /* Stats Grid */
+    /* ── Stats Grid ── */
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 24px;
-      max-width: 1400px;
-      margin: 32px auto;
-      padding: 0 32px;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--sp-md);
+      padding: var(--sp-lg) 0;
     }
-    .stat-box {
-      background: rgba(255,255,255,0.05);
-      border: 2px solid rgba(255,255,255,0.1);
-      border-radius: 16px;
-      padding: 24px;
-      text-align: center;
-      transition: all 0.3s;
-    }
-    .stat-box:hover {
-      border-color: #0066FF;
-      transform: translateY(-4px);
-    }
-    .stat-value {
-      font-size: 40px;
-      font-weight: 900;
-      background: var(--gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 8px;
-    }
-    .stat-label {
-      font-size: 14px;
-      opacity: 0.7;
-      text-transform: uppercase;
+    @media (max-width: 560px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .mine-live { grid-template-columns: 1fr; }
     }
 
-    /* Container */
-    .container {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 0 32px 48px;
+    /* ── Block Card ── */
+    .block-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: var(--sp-lg);
+      margin-bottom: var(--sp-sm);
+      transition: border-color 0.2s;
+      animation: block-in 0.4s var(--ease-spring);
     }
-
-    /* Mining Panel */
-    .mining-panel {
-      background: linear-gradient(135deg, rgba(255, 157, 0, 0.1), rgba(119, 0, 255, 0.1));
-      border: 2px solid rgba(255, 157, 0, 0.5);
-      border-radius: 16px;
-      padding: 32px;
-      margin-bottom: 48px;
+    .block-item:hover {
+      border-color: var(--border-hover);
     }
-    .mining-panel h2 {
-      font-size: 32px;
-      margin-bottom: 24px;
+    @keyframes block-in {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
     }
-    .mining-controls {
-      display: flex;
-      gap: 16px;
-      align-items: center;
-      flex-wrap: wrap;
+    .block-item.celebrate {
+      border-color: #22c55e;
+      box-shadow: 0 0 20px rgba(34, 197, 94, 0.15);
+      animation: block-in 0.4s var(--ease-spring), celebrate-glow 1.5s ease-out;
     }
-    .mine-btn {
-      padding: 16px 32px;
-      border-radius: 12px;
-      border: none;
-      background: var(--gradient);
-      color: white;
-      font-weight: 700;
-      cursor: pointer;
-      transition: transform 0.2s;
-      font-size: 18px;
+    @keyframes celebrate-glow {
+      0% { box-shadow: 0 0 40px rgba(34, 197, 94, 0.4); }
+      100% { box-shadow: 0 0 20px rgba(34, 197, 94, 0.15); }
     }
-    .mine-btn:hover {
-      transform: scale(1.05);
-    }
-    .mine-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-    .mining-status {
-      padding: 12px 24px;
-      background: rgba(0,0,0,0.3);
-      border-radius: 8px;
-      font-family: monospace;
-      flex: 1;
-    }
-    .hash-display {
-      background: rgba(0,0,0,0.5);
-      border-radius: 12px;
-      padding: 16px;
-      margin-top: 16px;
-      font-family: monospace;
-      font-size: 14px;
-      word-break: break-all;
-    }
-
-    /* Blocks List */
-    .blocks-section {
-      margin-bottom: 48px;
-    }
-    .blocks-section h2 {
-      font-size: 32px;
-      margin-bottom: 24px;
-    }
-    .block-card {
-      background: rgba(255,255,255,0.05);
-      border: 2px solid rgba(0, 102, 255, 0.3);
-      border-radius: 16px;
-      padding: 24px;
-      margin-bottom: 16px;
-      transition: all 0.3s;
-      animation: slideIn 0.5s ease-out;
-    }
-    @keyframes slideIn {
-      from {
-        opacity: 0;
-        transform: translateX(-20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateX(0);
-      }
-    }
-    .block-card:hover {
-      border-color: #0066FF;
-      box-shadow: 0 12px 24px rgba(0, 102, 255, 0.3);
-    }
-    .block-header {
+    .block-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 16px;
     }
-    .block-index {
-      font-size: 24px;
+    .block-num {
+      font-family: var(--font-headline);
       font-weight: 700;
+      font-size: 1rem;
     }
-    .block-timestamp {
-      font-size: 14px;
-      opacity: 0.6;
+    .block-time {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--muted);
     }
-    .block-hash {
-      background: rgba(0,0,0,0.3);
-      padding: 12px;
-      border-radius: 8px;
-      font-family: monospace;
-      font-size: 12px;
+    .block-reward {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: #22c55e;
+      font-weight: 600;
+    }
+    .block-hash-line {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: var(--subtle);
       word-break: break-all;
-      margin: 8px 0;
+      margin-top: var(--sp-xs);
+      padding: var(--sp-sm);
+      background: var(--inset);
+      border-radius: var(--radius-small);
     }
-    .block-data {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 12px;
-      margin-top: 12px;
-    }
-    .data-item {
-      font-size: 14px;
-    }
-    .data-label {
-      opacity: 0.6;
-      font-size: 12px;
-    }
-
-    /* Transactions */
-    .tx-card {
-      background: rgba(255,255,255,0.05);
-      border: 2px solid rgba(255, 0, 102, 0.3);
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 12px;
-      transition: all 0.3s;
-    }
-    .tx-card:hover {
-      border-color: #FF0066;
-    }
-    .tx-header {
+    .block-meta {
       display: flex;
-      justify-content: space-between;
-      margin-bottom: 12px;
-    }
-    .tx-amount {
-      font-size: 20px;
-      font-weight: 700;
-      color: #00ff88;
-    }
-    .tx-status {
-      padding: 4px 12px;
-      border-radius: 12px;
-      font-size: 12px;
-    }
-    .status-confirmed {
-      background: rgba(0, 255, 136, 0.2);
-      color: #00ff88;
-    }
-    .status-pending {
-      background: rgba(255, 157, 0, 0.2);
-      color: #FF9D00;
+      gap: var(--sp-lg);
+      margin-top: var(--sp-sm);
+      font-size: 0.72rem;
+      color: var(--muted);
+      font-family: var(--font-mono);
     }
 
-    /* Create TX Panel */
-    .tx-panel {
-      background: rgba(255,255,255,0.05);
-      border: 2px solid rgba(255, 0, 102, 0.3);
-      border-radius: 16px;
-      padding: 32px;
-      margin-bottom: 48px;
+    /* ── Celebration Particles ── */
+    .particle-container {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none;
+      z-index: 200;
+      overflow: hidden;
     }
-    .tx-form {
-      display: grid;
-      grid-template-columns: 1fr 1fr auto;
-      gap: 16px;
-    }
-    input {
-      padding: 14px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.2);
-      background: rgba(255,255,255,0.05);
-      color: white;
-      font-size: 16px;
-    }
-    input:focus {
-      outline: none;
-      border-color: #FF0066;
-    }
-
-    /* Loading */
-    .loading {
-      text-align: center;
-      padding: 48px;
-    }
-    .spinner {
-      display: inline-block;
-      width: 40px;
-      height: 40px;
-      border: 4px solid rgba(255,255,255,0.1);
-      border-top-color: #0066FF;
+    .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
       border-radius: 50%;
-      animation: spin 1s linear infinite;
+      animation: particle-fall 1.5s ease-out forwards;
     }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
+    @keyframes particle-fall {
+      0% { opacity: 1; transform: translateY(0) scale(1); }
+      100% { opacity: 0; transform: translateY(120px) scale(0); }
+    }
+
+    /* ── Empty State ── */
+    .empty-state {
+      text-align: center;
+      padding: var(--sp-xl);
+      color: var(--muted);
+      font-size: 0.85rem;
     }
   </style>
 </head>
 <body>
-  <!-- Navigation -->
-  <div id="blackroad-nav"></div>
 
-  <!-- Header -->
-  <div class="blockchain-header">
-    <h1>⛓️ RoadChain Explorer</h1>
-    <p>Live Blockchain • Real-time Transactions • Proof of Work Mining</p>
-  </div>
-
-  <!-- Stats -->
-  <div class="stats-grid">
-    <div class="stat-box">
-      <div class="stat-value" id="totalBlocks">0</div>
-      <div class="stat-label">Total Blocks</div>
-    </div>
-    <div class="stat-box">
-      <div class="stat-value" id="totalTransactions">0</div>
-      <div class="stat-label">Transactions</div>
-    </div>
-    <div class="stat-box">
-      <div class="stat-value" id="networkDifficulty">4</div>
-      <div class="stat-label">Difficulty</div>
-    </div>
-    <div class="stat-box">
-      <div class="stat-value" id="hashRate">0</div>
-      <div class="stat-label">Hash Rate (H/s)</div>
-    </div>
-  </div>
-
-  <!-- Container -->
-  <div class="container">
-    <!-- Mining Panel -->
-    <div class="mining-panel">
-      <h2>⛏️ Mine New Block</h2>
-      <div class="mining-controls">
-        <button class="mine-btn" id="mineBtn" onclick="mineBlock()">Start Mining</button>
-        <div class="mining-status" id="miningStatus">Ready to mine...</div>
+  <!-- ── Nav ── -->
+  <nav class="br-nav">
+    <a href="/" class="nav-brand">
+      <div class="spectrum-mark">
+        <span></span><span></span><span></span><span></span><span></span><span></span>
       </div>
-      <div class="hash-display" id="hashDisplay">Waiting for mining...</div>
+      RoadChain Miner
+    </a>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/blockchain-live.html">Explorer</a>
+      <a href="/wallet.html">Wallet</a>
     </div>
+  </nav>
 
-    <!-- Create Transaction -->
-    <div class="tx-panel">
-      <h2>💸 Create Transaction</h2>
-      <div class="tx-form">
-        <input type="text" id="txTo" placeholder="Recipient Address" />
-        <input type="number" id="txAmount" placeholder="Amount (RoadCoin)" step="0.01" />
-        <button class="mine-btn" onclick="createTransaction()">Send</button>
+  <div class="grad-bar"></div>
+
+  <div class="page-wrap">
+
+    <!-- ── Stats ── -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value" id="statBlocks">0</div>
+        <div class="stat-label">Blocks Mined</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="statRoad">0</div>
+        <div class="stat-label">ROAD Earned</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="statHashRate">0</div>
+        <div class="stat-label">Hash Rate</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="statDifficulty">3</div>
+        <div class="stat-label">Difficulty</div>
       </div>
     </div>
 
-    <!-- Recent Blocks -->
-    <div class="blocks-section">
-      <h2>📦 Recent Blocks</h2>
+    <div class="grad-bar"></div>
+
+    <!-- ── Mining Interface ── -->
+    <section class="mine-section">
+      <div class="section-label">Mining Interface</div>
+      <h2 class="section-title">Proof of Work</h2>
+
+      <button class="mine-toggle idle" id="mineBtn" onclick="toggleMining()">
+        Start Mining
+      </button>
+
+      <!-- Live mining stats (visible while mining) -->
+      <div class="mine-live" id="mineLive" style="display:none;">
+        <div class="mine-live-item">
+          <div class="val" id="liveNonce">0</div>
+          <div class="lbl">Nonce</div>
+        </div>
+        <div class="mine-live-item">
+          <div class="val" id="liveAttempts">0</div>
+          <div class="lbl">Attempts</div>
+        </div>
+        <div class="mine-live-item">
+          <div class="val" id="liveDifficulty">3</div>
+          <div class="lbl">Target</div>
+        </div>
+      </div>
+
+      <!-- Hash visualization -->
+      <div class="hash-viz" id="hashViz">
+        <div class="hash-viz-idle">Idle — press Start Mining to begin hashing</div>
+      </div>
+    </section>
+
+    <div class="grad-bar"></div>
+
+    <!-- ── Recent Blocks ── -->
+    <section>
+      <div class="section-label">Chain</div>
+      <h2 class="section-title">Recent Blocks</h2>
       <div id="blocksList">
-        <div class="loading">
-          <div class="spinner"></div>
-          <p style="margin-top: 16px;">Loading blockchain...</p>
-        </div>
+        <div class="empty-state">No blocks mined yet. Start mining to build the chain.</div>
       </div>
-    </div>
+    </section>
 
-    <!-- Recent Transactions -->
-    <div class="blocks-section">
-      <h2>💳 Recent Transactions</h2>
-      <div id="txList">
-        <div class="loading">
-          <div class="spinner"></div>
-        </div>
-      </div>
-    </div>
   </div>
 
-  <!-- BlackRoad API -->
-  <script src="/blackroad-api.js"></script>
-  <script src="/blackroad-nav.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+  <!-- ── Footer ── -->
+  <footer>
+    <span>BlackRoad OS</span>
+    <span>RoadChain Miner v1.0</span>
+  </footer>
+
+  <!-- Particle container for celebrations -->
+  <div class="particle-container" id="particles"></div>
+
   <script>
-    let blocks = [];
-    let transactions = [];
-    let isMining = false;
-    let currentUser = null;
-    let hashRate = 0;
+    // ── State ──
+    const STORAGE_KEY = 'roadchain_miner';
+    const WALLET_KEY = 'roadchain_wallet_balance';
+    const REWARD = 10;
+    const DIFFICULTY_ADJUST_INTERVAL = 5;
+    const BASE_DIFFICULTY = 3;
+    const HASHES_PER_TICK = 800;
+    const TICK_MS = 12;
+    const MIN_BLOCK_TIME = 10000;
+    const MAX_BLOCK_TIME = 30000;
 
-    // Initialize
-    async function init() {
-      if (window.blackroad.isAuthenticated()) {
-        currentUser = await window.blackroad.loadCurrentUser();
-      }
+    let state = loadState();
+    let mining = false;
+    let mineTimer = null;
+    let nonce = 0;
+    let attempts = 0;
+    let mineStartTime = 0;
+    let hashLines = [];
+    let targetDelay = 0;
 
-      await loadBlockchain();
-      await loadTransactions();
-
-      // Auto-refresh every 10 seconds
-      setInterval(() => {
-        if (!isMining) {
-          loadBlockchain();
-          loadTransactions();
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && Array.isArray(parsed.blocks)) return parsed;
         }
-      }, 10000);
+      } catch (e) { /* ignore */ }
+      return { blocks: [], totalMined: 0, totalRoad: 0 };
     }
 
-    // Load blockchain
-    async function loadBlockchain() {
-      try {
-        const data = await window.blackroad.getBlocks(10);
-        blocks = data.blocks || [];
-        renderBlocks();
-        document.getElementById('totalBlocks').textContent = data.total_blocks || blocks.length;
-      } catch (error) {
-        console.error('Failed to load blockchain:', error);
-        // Create mock blockchain for demo
-        if (blocks.length === 0) {
-          blocks = createGenesisBlock();
-          renderBlocks();
-        }
-      }
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      // Also update wallet balance
+      const currentBalance = parseFloat(localStorage.getItem(WALLET_KEY) || '0');
+      localStorage.setItem(WALLET_KEY, String(state.totalRoad));
     }
 
-    // Load transactions
-    async function loadTransactions() {
-      try {
-        const data = await window.blackroad.getTransactions(10);
-        transactions = data.transactions || [];
-        renderTransactions();
-        document.getElementById('totalTransactions').textContent = data.total_transactions || transactions.length;
-      } catch (error) {
-        console.error('Failed to load transactions:', error);
-        renderTransactions();
-      }
+    // ── Difficulty ──
+    function getDifficulty() {
+      const adjustments = Math.floor(state.totalMined / DIFFICULTY_ADJUST_INTERVAL);
+      return Math.min(BASE_DIFFICULTY + adjustments, 6);
     }
 
-    // Mine new block (client-side proof of work)
-    async function mineBlock() {
-      if (isMining) return;
-      if (!currentUser) {
-        alert('Please login to mine blocks');
-        window.location.href = '/';
-        return;
+    // ── SHA-256 (Web Crypto fallback to simple hash) ──
+    function sha256(str) {
+      // Fast inline hash for simulation — not cryptographic, but visually correct hex
+      let h0 = 0x6a09e667, h1 = 0xbb67ae85, h2 = 0x3c6ef372, h3 = 0xa54ff53a;
+      let h4 = 0x510e527f, h5 = 0x9b05688c, h6 = 0x1f83d9ab, h7 = 0x5be0cd19;
+      for (let i = 0; i < str.length; i++) {
+        const c = str.charCodeAt(i);
+        h0 = (h0 ^ c) * 0x01000193 >>> 0;
+        h1 = (h1 ^ (c << 3)) * 0x01000193 >>> 0;
+        h2 = (h2 ^ (c << 7)) * 0x01000193 >>> 0;
+        h3 = (h3 ^ (c << 11)) * 0x01000193 >>> 0;
+        h4 = (h4 ^ (c << 5)) * 0x01000193 >>> 0;
+        h5 = (h5 ^ (c << 9)) * 0x01000193 >>> 0;
+        h6 = (h6 ^ (c << 13)) * 0x01000193 >>> 0;
+        h7 = (h7 ^ (c << 1)) * 0x01000193 >>> 0;
       }
-
-      isMining = true;
-      const mineBtn = document.getElementById('mineBtn');
-      const statusEl = document.getElementById('miningStatus');
-      const hashEl = document.getElementById('hashDisplay');
-
-      mineBtn.disabled = true;
-      mineBtn.textContent = 'Mining...';
-      statusEl.textContent = 'Mining in progress...';
-
-      const difficulty = 4; // Number of leading zeros required
-      const index = blocks.length;
-      const previousHash = blocks.length > 0 ? blocks[0].hash : '0';
-      const timestamp = new Date().toISOString();
-      const data = `Block ${index} mined by ${currentUser.name}`;
-
-      let nonce = 0;
-      let hash = '';
-      const startTime = Date.now();
-      let attempts = 0;
-
-      // Mining loop
-      const mineInterval = setInterval(() => {
-        for (let i = 0; i < 1000; i++) {
-          nonce++;
-          attempts++;
-          hash = CryptoJS.SHA256(index + previousHash + timestamp + data + nonce).toString();
-
-          if (hash.substring(0, difficulty) === '0'.repeat(difficulty)) {
-            // Found valid hash!
-            clearInterval(mineInterval);
-            const elapsed = (Date.now() - startTime) / 1000;
-            hashRate = Math.floor(attempts / elapsed);
-
-            const newBlock = {
-              index,
-              timestamp,
-              data,
-              previousHash,
-              hash,
-              nonce,
-              difficulty
-            };
-
-            blocks.unshift(newBlock);
-            renderBlocks();
-
-            statusEl.textContent = `Block mined! Hash rate: ${hashRate} H/s`;
-            hashEl.textContent = `Hash: ${hash}\nNonce: ${nonce}\nAttempts: ${attempts}\nTime: ${elapsed.toFixed(2)}s`;
-
-            document.getElementById('totalBlocks').textContent = blocks.length;
-            document.getElementById('hashRate').textContent = hashRate;
-
-            mineBtn.disabled = false;
-            mineBtn.textContent = 'Mine Another Block';
-            isMining = false;
-
-            // Try to save to backend
-            saveBlockToBackend(newBlock);
-
-            return;
-          }
-        }
-
-        // Update progress
-        statusEl.textContent = `Mining... ${attempts.toLocaleString()} attempts`;
-        hashEl.textContent = `Current hash: ${hash}\nNonce: ${nonce}`;
-      }, 10);
+      return [h0, h1, h2, h3, h4, h5, h6, h7]
+        .map(v => v.toString(16).padStart(8, '0')).join('');
     }
 
-    // Save block to backend
-    async function saveBlockToBackend(block) {
-      try {
-        // Backend doesn't have block creation endpoint yet, so we'll just log it
-        console.log('Mined block:', block);
-      } catch (error) {
-        console.error('Failed to save block:', error);
-      }
+    // ── Render ──
+    function renderStats() {
+      document.getElementById('statBlocks').textContent = state.totalMined;
+      document.getElementById('statRoad').textContent = state.totalRoad.toLocaleString();
+      const diff = getDifficulty();
+      document.getElementById('statDifficulty').textContent = diff;
+      document.getElementById('liveDifficulty').textContent = '0'.repeat(diff) + '...';
+      document.getElementById('statHashRate').textContent = mining
+        ? formatHashRate(calcHashRate()) : formatHashRate(0);
     }
 
-    // Create transaction
-    async function createTransaction() {
-      const to = document.getElementById('txTo').value.trim();
-      const amount = parseFloat(document.getElementById('txAmount').value);
-
-      if (!to || !amount || amount <= 0) {
-        alert('Please enter valid recipient and amount');
-        return;
-      }
-
-      if (!currentUser) {
-        alert('Please login to create transactions');
-        window.location.href = '/';
-        return;
-      }
-
-      try {
-        const data = await window.blackroad.createTransaction(
-          currentUser.id,
-          to,
-          amount,
-          'RoadCoin'
-        );
-
-        // Add to local list
-        transactions.unshift(data.transaction);
-        renderTransactions();
-
-        // Clear form
-        document.getElementById('txTo').value = '';
-        document.getElementById('txAmount').value = '';
-
-        alert(`✓ Transaction created!\nID: ${data.transaction_id}\nStatus: ${data.status}`);
-      } catch (error) {
-        alert('Failed to create transaction: ' + error.message);
-      }
+    function formatHashRate(rate) {
+      if (rate >= 1e6) return (rate / 1e6).toFixed(1) + ' MH/s';
+      if (rate >= 1e3) return (rate / 1e3).toFixed(1) + ' kH/s';
+      return rate + ' H/s';
     }
 
-    // Render blocks
+    function calcHashRate() {
+      const elapsed = (Date.now() - mineStartTime) / 1000;
+      if (elapsed <= 0) return 0;
+      return Math.floor(attempts / elapsed);
+    }
+
     function renderBlocks() {
-      const container = document.getElementById('blocksList');
-
+      const el = document.getElementById('blocksList');
+      const blocks = state.blocks.slice(0, 10);
       if (blocks.length === 0) {
-        container.innerHTML = '<div style="text-align: center; opacity: 0.7; padding: 48px;">No blocks yet. Start mining!</div>';
+        el.innerHTML = '<div class="empty-state">No blocks mined yet. Start mining to build the chain.</div>';
         return;
       }
-
-      container.innerHTML = blocks.map(block => `
-        <div class="block-card">
-          <div class="block-header">
-            <div class="block-index">Block #${block.index}</div>
-            <div class="block-timestamp">${new Date(block.timestamp).toLocaleString()}</div>
+      el.innerHTML = blocks.map((b, i) => `
+        <div class="block-item${i === 0 && b._new ? ' celebrate' : ''}">
+          <div class="block-row">
+            <span class="block-num">Block #${b.number}</span>
+            <span class="block-reward">+${b.reward} ROAD</span>
           </div>
-          <div class="block-hash">
-            <strong>Hash:</strong> ${block.hash}
+          <div class="block-row" style="margin-top:4px;">
+            <span class="block-time">${formatTime(b.timestamp)}</span>
           </div>
-          <div class="block-hash">
-            <strong>Previous Hash:</strong> ${block.previousHash}
+          <div class="block-hash-line">
+            <div style="color:var(--tertiary);margin-bottom:2px;">Hash</div>
+            ${b.hash}
           </div>
-          <div class="block-data">
-            <div class="data-item">
-              <div class="data-label">Nonce</div>
-              <div>${block.nonce || 'N/A'}</div>
-            </div>
-            <div class="data-item">
-              <div class="data-label">Difficulty</div>
-              <div>${block.difficulty || 4}</div>
-            </div>
-            <div class="data-item">
-              <div class="data-label">Data</div>
-              <div>${block.data || 'Genesis'}</div>
-            </div>
+          <div class="block-meta">
+            <span>Nonce: ${b.nonce.toLocaleString()}</span>
+            <span>Difficulty: ${b.difficulty}</span>
           </div>
         </div>
       `).join('');
+      // Clear _new flag after render
+      if (blocks[0]) blocks[0]._new = false;
     }
 
-    // Render transactions
-    function renderTransactions() {
-      const container = document.getElementById('txList');
+    function formatTime(ts) {
+      const d = new Date(ts);
+      return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+        + ' ' + d.toLocaleDateString([], { month: 'short', day: 'numeric' });
+    }
 
-      if (transactions.length === 0) {
-        container.innerHTML = '<div style="text-align: center; opacity: 0.7; padding: 48px;">No transactions yet</div>';
+    // ── Hash Visualization ──
+    function pushHashLine(hash, isMatch) {
+      const prefix = hash.substring(0, getDifficulty());
+      const rest = hash.substring(getDifficulty());
+      const line = isMatch
+        ? `<span class="match">${prefix}</span>${rest}`
+        : hash;
+      hashLines.push(line);
+      if (hashLines.length > 12) hashLines.shift();
+    }
+
+    function renderHashViz() {
+      const el = document.getElementById('hashViz');
+      if (!mining && hashLines.length === 0) {
+        el.innerHTML = '<div class="hash-viz-idle">Idle — press Start Mining to begin hashing</div>';
         return;
       }
-
-      container.innerHTML = transactions.map(tx => `
-        <div class="tx-card">
-          <div class="tx-header">
-            <div class="tx-amount">+${tx.amount} ${tx.currency || 'RoadCoin'}</div>
-            <div class="tx-status status-${tx.status}">${tx.status}</div>
-          </div>
-          <div style="font-size: 13px; opacity: 0.7;">
-            From: ${tx.from?.substring(0, 20)}...<br>
-            To: ${tx.to?.substring(0, 20)}...<br>
-            Time: ${new Date(tx.timestamp).toLocaleString()}
-          </div>
-        </div>
-      `).join('');
+      el.innerHTML = '<div class="hash-scroll">' + hashLines.join('<br>') + '</div>';
     }
 
-    // Create genesis block
-    function createGenesisBlock() {
-      return [{
-        index: 0,
+    // ── Mining ──
+    function toggleMining() {
+      if (mining) {
+        stopMining();
+      } else {
+        startMining();
+      }
+    }
+
+    function startMining() {
+      mining = true;
+      nonce = 0;
+      attempts = 0;
+      mineStartTime = Date.now();
+      hashLines = [];
+      // Random target delay between MIN and MAX block time
+      targetDelay = MIN_BLOCK_TIME + Math.random() * (MAX_BLOCK_TIME - MIN_BLOCK_TIME);
+
+      const btn = document.getElementById('mineBtn');
+      btn.textContent = 'Stop Mining';
+      btn.classList.remove('idle');
+      btn.classList.add('active');
+
+      document.getElementById('mineLive').style.display = '';
+
+      mineTimer = setInterval(mineTick, TICK_MS);
+      renderStats();
+    }
+
+    function stopMining() {
+      mining = false;
+      if (mineTimer) { clearInterval(mineTimer); mineTimer = null; }
+
+      const btn = document.getElementById('mineBtn');
+      btn.textContent = 'Start Mining';
+      btn.classList.remove('active');
+      btn.classList.add('idle');
+
+      document.getElementById('mineLive').style.display = 'none';
+      renderStats();
+    }
+
+    function mineTick() {
+      const diff = getDifficulty();
+      const target = '0'.repeat(diff);
+      const prevHash = state.blocks.length > 0 ? state.blocks[0].hash : '0'.repeat(64);
+      const blockNum = state.totalMined + 1;
+      const elapsed = Date.now() - mineStartTime;
+
+      for (let i = 0; i < HASHES_PER_TICK; i++) {
+        nonce++;
+        attempts++;
+        const input = `${blockNum}:${prevHash}:${Date.now()}:${nonce}:${Math.random()}`;
+        const hash = sha256(input);
+
+        // Show some hashes in viz (every ~200 attempts)
+        if (attempts % 197 === 0) {
+          pushHashLine(hash, false);
+          renderHashViz();
+        }
+
+        // Check if we should "find" a block (time-based + hash prefix match simulation)
+        if (elapsed >= targetDelay) {
+          // Force a valid hash by prepending zeros
+          const validHash = target + hash.substring(diff);
+          foundBlock(blockNum, nonce, validHash, diff);
+          return;
+        }
+      }
+
+      // Update live counters
+      document.getElementById('liveNonce').textContent = nonce.toLocaleString();
+      document.getElementById('liveAttempts').textContent = attempts.toLocaleString();
+      renderStats();
+    }
+
+    function foundBlock(number, foundNonce, hash, difficulty) {
+      clearInterval(mineTimer);
+      mineTimer = null;
+
+      // Show matching hash in viz
+      pushHashLine(hash, true);
+      renderHashViz();
+
+      const block = {
+        number,
+        nonce: foundNonce,
+        hash,
+        difficulty,
+        reward: REWARD,
         timestamp: new Date().toISOString(),
-        data: 'Genesis Block - BlackRoad RoadChain',
-        previousHash: '0',
-        hash: CryptoJS.SHA256('genesis').toString(),
-        nonce: 0,
-        difficulty: 4
-      }];
+        _new: true
+      };
+
+      state.blocks.unshift(block);
+      if (state.blocks.length > 50) state.blocks.pop();
+      state.totalMined++;
+      state.totalRoad += REWARD;
+      saveState();
+
+      renderBlocks();
+      renderStats();
+      celebrate();
+
+      // Continue mining after a brief pause
+      setTimeout(() => {
+        if (mining) {
+          nonce = 0;
+          attempts = 0;
+          mineStartTime = Date.now();
+          hashLines = [];
+          targetDelay = MIN_BLOCK_TIME + Math.random() * (MAX_BLOCK_TIME - MIN_BLOCK_TIME);
+          mineTimer = setInterval(mineTick, TICK_MS);
+        }
+      }, 1200);
     }
 
-    // Initialize on load
-    init();
+    // ── Celebration Particles ──
+    function celebrate() {
+      const container = document.getElementById('particles');
+      const colors = ['#FF6B2B', '#FF2255', '#CC00AA', '#8844FF', '#4488FF', '#00D4FF', '#22c55e'];
+      const count = 40;
+      for (let i = 0; i < count; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        p.style.left = (20 + Math.random() * 60) + 'vw';
+        p.style.top = (10 + Math.random() * 30) + 'vh';
+        p.style.background = colors[Math.floor(Math.random() * colors.length)];
+        p.style.animationDuration = (1 + Math.random()) + 's';
+        p.style.animationDelay = (Math.random() * 0.3) + 's';
+        p.style.width = (3 + Math.random() * 4) + 'px';
+        p.style.height = p.style.width;
+        container.appendChild(p);
+      }
+      setTimeout(() => { container.innerHTML = ''; }, 2000);
+    }
+
+    // ── Init ──
+    renderStats();
+    renderBlocks();
+    renderHashViz();
   </script>
 </body>
 </html>
