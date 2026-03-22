@@ -14,6 +14,18 @@
     </image>
 
     <item>
+      <title>How I Built a Search Engine on Raspberry Pis</title>
+      <link>https://blackroad.io/blog-search-engine-pis</link>
+      <guid isPermaLink="true">https://blackroad.io/blog-search-engine-pis</guid>
+      <pubDate>Sun, 22 Mar 2026 18:00:00 GMT</pubDate>
+      <author>amundsonalexa@gmail.com (Alexa Amundson)</author>
+      <category>search-engine</category>
+      <category>raspberry-pi</category>
+      <category>self-hosted</category>
+      <description>FTS5 + Workers AI + D1. Full-text search with AI-generated answers on self-hosted infrastructure. No Elasticsearch, no Algolia.</description>
+    </item>
+
+    <item>
       <title>Running 200 AI Agents on $38/month Infrastructure</title>
       <link>https://blackroad.io/blog-200-agents</link>
       <guid isPermaLink="true">https://blackroad.io/blog-200-agents</guid>
@@ -47,7 +59,7 @@
     </item>
 
     <item>
-      <title>How I Built a Sovereign AI OS for $150/month</title>
+      <title>How I Built a Sovereign AI OS for $38/month</title>
       <link>https://blackroad.io/blog-sovereign-os-150</link>
       <guid isPermaLink="true">https://blackroad.io/blog-sovereign-os-150</guid>
       <pubDate>Sun, 22 Mar 2026 00:00:00 GMT</pubDate>
