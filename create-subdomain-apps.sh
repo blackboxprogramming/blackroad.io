@@ -116,7 +116,7 @@ for subdomain in "${SUBDOMAINS[@]}"; do
   <div class="container">
     <div class="hero">
       <h2>BlackRoad ${subdomain^}</h2>
-      <p>Powered by 30,000 AI Agents</p>
+      <p>Powered by 35 AI Agents</p>
     </div>
     <div class="feature-grid">
       <div class="feature-card">
@@ -133,8 +133,8 @@ for subdomain in "${SUBDOMAINS[@]}"; do
       </div>
     </div>
     <div class="krak-banner">
-      <h3>💸 Send me money on Krak!</h3>
-      <a href="https://krak.app/AAAAAAAA" target="_blank">Tap here to try Krak →</a>
+      <h3>BlackRoad OS — Pave Tomorrow.</h3>
+      <a href="https://blackroad.io" target="_blank">Learn More →</a>
     </div>
   </div>
 </body>

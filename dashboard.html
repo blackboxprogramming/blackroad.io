@@ -3,324 +3,451 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BlackRoad Dashboard - All Apps</title>
+  <title>Dashboard — BlackRoad OS</title>
+  <meta name="description" content="BlackRoad OS live infrastructure dashboard. Fleet status, agent monitoring, and system metrics.">
+  <meta property="og:title" content="Dashboard — BlackRoad OS">
+  <meta property="og:description" content="Live infrastructure dashboard for BlackRoad OS.">
+  <meta property="og:image" content="https://images.blackroad.io/pixel-art/road-logo.png">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="https://images.blackroad.io/pixel-art/road-logo.png" type="image/png">
+  <link rel="stylesheet" href="/_shared/design.css">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    :root { --gradient: linear-gradient(135deg, #FF9D00, #FF6B00, #FF0066, #D600AA, #7700FF, #0066FF); }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #02030a;
-      color: white;
-      min-height: 100vh;
-      padding: 48px 24px;
+    /* ── Dashboard Layout ── */
+    .dash-wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--sp-lg);
     }
-    .container { max-width: 1400px; margin: 0 auto; }
-    h1 {
-      font-size: 64px;
-      font-weight: 900;
-      background: var(--gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      text-align: center;
-      margin-bottom: 48px;
+
+    .dash-header {
+      padding: var(--sp-xl) 0 var(--sp-lg);
     }
-    .app-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 24px;
-      margin-bottom: 48px;
+    .dash-header h1 {
+      margin-bottom: var(--sp-xs);
     }
-    .app-card {
-      background: rgba(255,255,255,0.05);
-      border: 2px solid rgba(255,255,255,0.1);
-      border-radius: 16px;
-      padding: 32px;
-      transition: all 0.3s;
-      cursor: pointer;
-    }
-    .app-card:hover {
-      transform: translateY(-8px);
-      border-color: #7700FF;
-      background: rgba(255,255,255,0.08);
-      box-shadow: 0 20px 40px rgba(119, 0, 255, 0.3);
-    }
-    .app-card h2 {
-      font-size: 28px;
-      margin-bottom: 12px;
-    }
-    .app-card p {
-      opacity: 0.8;
-      margin-bottom: 16px;
-    }
-    .status {
-      display: inline-block;
-      padding: 6px 12px;
-      border-radius: 12px;
-      font-size: 12px;
-      font-weight: 700;
-      background: rgba(0, 255, 136, 0.2);
-      color: #00ff88;
-    }
-    .features {
-      list-style: none;
-      margin-top: 16px;
-    }
-    .features li {
-      padding: 8px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
-      font-size: 14px;
-      opacity: 0.9;
-    }
-    .payment-section {
-      text-align: center;
-      padding: 48px;
-      background: rgba(255,255,255,0.05);
-      border-radius: 24px;
-      border: 2px solid rgba(255,255,255,0.1);
-    }
-    .payment-section h2 {
-      font-size: 32px;
-      margin-bottom: 24px;
-    }
-    .payment-buttons {
+    .dash-header .live-row {
       display: flex;
-      gap: 16px;
-      justify-content: center;
-      margin: 24px 0;
+      align-items: center;
+      gap: var(--sp-sm);
+      margin-top: var(--sp-sm);
     }
-    .payment-buttons a {
-      display: inline-block;
-      padding: 16px 32px;
-      background: var(--gradient);
-      color: white;
-      text-decoration: none;
-      border-radius: 12px;
+    .dash-header .uptime-label {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    /* ── Stat Cards Grid ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: var(--sp-md);
+    }
+    .stat-card {
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-card .stat-value {
+      transition: opacity 0.3s;
+    }
+    .stat-card .stat-accent {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+    }
+    .stat-card:nth-child(1) .stat-accent { background: var(--ember); }
+    .stat-card:nth-child(2) .stat-accent { background: var(--rose); }
+    .stat-card:nth-child(3) .stat-accent { background: var(--magenta); }
+    .stat-card:nth-child(4) .stat-accent { background: var(--violet); }
+    .stat-card:nth-child(5) .stat-accent { background: var(--azure); }
+    .stat-card:nth-child(6) .stat-accent { background: var(--cyan); }
+
+    /* ── Fleet Grid ── */
+    .fleet-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: var(--sp-md);
+    }
+    .node-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: var(--sp-md);
+      transition: border-color 0.2s;
+    }
+    .node-card:hover {
+      border-color: var(--border-hover);
+    }
+    .node-header {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-sm);
+      margin-bottom: var(--sp-sm);
+    }
+    .node-name {
+      font-family: var(--font-headline);
       font-weight: 700;
-      transition: transform 0.2s;
+      font-size: 0.95rem;
     }
-    .payment-buttons a:hover {
-      transform: scale(1.05);
+    .node-role {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
     }
-    .crypto-address {
-      font-family: monospace;
-      background: rgba(0,0,0,0.3);
-      padding: 16px;
-      border-radius: 12px;
-      margin-top: 24px;
-      font-size: 14px;
-      word-break: break-all;
+    .node-metrics {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--sp-xs) var(--sp-md);
+      margin-top: var(--sp-sm);
+    }
+    .node-metric {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+    }
+    .node-metric-label {
+      color: var(--muted);
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .node-metric-value {
+      color: var(--secondary);
+    }
+
+    /* ── Disk Bar ── */
+    .disk-bar {
+      height: 3px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-top: 3px;
+      grid-column: 1 / -1;
+    }
+    .disk-bar-fill {
+      height: 100%;
+      background: var(--grad);
+      border-radius: 2px;
+      transition: width 0.6s var(--ease-spring);
+    }
+
+    /* ── Social Feed ── */
+    .feed-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-sm);
+    }
+    .feed-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: var(--sp-md);
+      transition: border-color 0.2s;
+    }
+    .feed-item:hover {
+      border-color: var(--border-hover);
+    }
+    .feed-author {
+      font-family: var(--font-headline);
+      font-weight: 600;
+      font-size: 0.85rem;
+      margin-bottom: 2px;
+    }
+    .feed-content {
+      font-size: 0.85rem;
+      color: var(--secondary);
+      line-height: 1.5;
+    }
+    .feed-meta {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-sm);
+      margin-top: var(--sp-sm);
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--muted);
+    }
+    .feed-depth {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 2px 6px;
+      border-radius: var(--radius-small);
+      background: var(--inset);
+      border: 1px solid var(--border);
+    }
+
+    /* ── Section Spacing ── */
+    .dash-section {
+      padding: var(--sp-xl) 0;
+    }
+
+    /* ── Pulsing status dot ── */
+    @keyframes pulse-dot {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.4); }
+      50% { box-shadow: 0 0 0 5px rgba(34,197,94,0); }
+    }
+    .status-dot.live {
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+
+    /* ── Number animate ── */
+    @keyframes countUp {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .stat-value.loaded {
+      animation: countUp 0.5s var(--ease-spring) forwards;
+    }
+
+    /* ── Loading skeleton for values ── */
+    .stat-value.loading {
+      display: inline-block;
+      width: 48px;
+      height: 2rem;
+    }
+
+    /* ── Error state ── */
+    .fetch-error {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-align: center;
+      padding: var(--sp-lg);
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .stats-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+    @media (max-width: 560px) {
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .fleet-grid {
+        grid-template-columns: 1fr;
+      }
+      .dash-section {
+        padding: var(--sp-lg) 0;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>🛣️ BlackRoad OS</h1>
 
-    <div class="app-grid">
-      <div class="app-card" onclick="window.location.href='/'">
-        <h2>🏠 Main App</h2>
-        <span class="status">LIVE</span>
-        <p>Full authentication & payments</p>
-        <ul class="features">
-          <li>✓ JWT Authentication</li>
-          <li>✓ Stripe Payments</li>
-          <li>✓ 3 Pricing Tiers</li>
-          <li>✓ User Dashboard</li>
-        </ul>
-      </div>
+  <!-- ── Nav ── -->
+  <nav class="br-nav">
+    <a href="/" class="nav-brand">
+      <span class="spectrum-mark">
+        <span></span><span></span><span></span><span></span><span></span><span></span>
+      </span>
+      BlackRoad Dashboard
+    </a>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/agents-live.html">Agents</a>
+      <a href="/chat.html">Chat</a>
+      <a href="/terminal.html">Terminal</a>
+    </div>
+  </nav>
 
-      <div class="app-card" onclick="window.location.href='/chat.html'">
-        <h2>💬 AI Chat</h2>
-        <span class="status">LIVE</span>
-        <p>Talk to 30,000 AI agents</p>
-        <ul class="features">
-          <li>✓ Real-time messaging</li>
-          <li>✓ AI responses</li>
-          <li>✓ Guest mode</li>
-          <li>✓ Message history</li>
-        </ul>
-      </div>
+  <main class="dash-wrap">
 
-      <div class="app-card" onclick="window.location.href='/agents-live.html'">
-        <h2>🤖 Agents Dashboard</h2>
-        <span class="status">LIVE</span>
-        <p>Manage your AI agents</p>
-        <ul class="features">
-          <li>✓ 30,000 agents</li>
-          <li>✓ Real-time monitoring</li>
-          <li>✓ Agent spawning</li>
-          <li>✓ Task delegation</li>
-        </ul>
-      </div>
-
-      <div class="app-card" onclick="window.location.href='/agents-dynamic.html'" style="border-color: #7700FF;">
-        <h2>🤖 Live Agents</h2>
-        <span class="status">NEW</span>
-        <p>Dynamic agent dashboard</p>
-        <ul class="features">
-          <li>✓ Real-time spawning</li>
-          <li>✓ Auto-refresh</li>
-          <li>✓ Quick spawn buttons</li>
-          <li>✓ Pack selection</li>
-        </ul>
-      </div>
-
-      <div class="app-card" onclick="window.location.href='/blockchain-live.html'">
-        <h2>⛓️ RoadChain</h2>
-        <span class="status">LIVE</span>
-        <p>Blockchain explorer</p>
-        <ul class="features">
-          <li>✓ View blocks</li>
-          <li>✓ Transactions</li>
-          <li>✓ Wallet management</li>
-          <li>✓ Mine RoadCoin</li>
-        </ul>
-      </div>
-
-      <div class="app-card" onclick="window.location.href='/blockchain-dynamic.html'" style="border-color: #0066FF;">
-        <h2>⛓️ Live Mining</h2>
-        <span class="status">NEW</span>
-        <p>Real proof-of-work mining</p>
-        <ul class="features">
-          <li>✓ SHA-256 mining</li>
-          <li>✓ Live hash rate</li>
-          <li>✓ Block creation</li>
-          <li>✓ TX management</li>
-        </ul>
-      </div>
-
-      <div class="app-card" onclick="window.location.href='/files-live.html'">
-        <h2>📁 File Explorer</h2>
-        <span class="status">LIVE</span>
-        <p>Cloud file management</p>
-        <ul class="features">
-          <li>✓ File upload</li>
-          <li>✓ Cloud storage</li>
-          <li>✓ File sharing</li>
-          <li>✓ Version control</li>
-        </ul>
-      </div>
-
-      <div class="app-card" onclick="window.location.href='/social-live.html'">
-        <h2>👥 Social Network</h2>
-        <span class="status">LIVE</span>
-        <p>BlackRoad social platform</p>
-        <ul class="features">
-          <li>✓ Create posts</li>
-          <li>✓ Follow users</li>
-          <li>✓ Like & comment</li>
-          <li>✓ Activity feed</li>
-        </ul>
-      </div>
-
-      <div class="app-card" onclick="window.location.href='/pay.html'">
-        <h2>💳 Payments</h2>
-        <span class="status">LIVE</span>
-        <p>Payment processing</p>
-        <ul class="features">
-          <li>✓ Stripe integration</li>
-          <li>✓ Crypto payments</li>
-          <li>✓ Subscriptions</li>
-          <li>✓ Invoices</li>
-        </ul>
-      </div>
-
-      <div class="app-card" onclick="window.location.href='/math.html'">
-        <h2>🔢 Math Lab</h2>
-        <span class="status">LIVE</span>
-        <p>Quantum computing tools</p>
-        <ul class="features">
-          <li>✓ Calculations</li>
-          <li>✓ Visualizations</li>
-          <li>✓ AI assistance</li>
-          <li>✓ Data analysis</li>
-        </ul>
-      </div>
-
-      <div class="app-card" onclick="window.location.href='/docs.html'">
-        <h2>📚 Documentation</h2>
-        <span class="status">LIVE</span>
-        <p>API docs & guides</p>
-        <ul class="features">
-          <li>✓ API reference</li>
-          <li>✓ Tutorials</li>
-          <li>✓ Examples</li>
-          <li>✓ Code samples</li>
-        </ul>
-      </div>
-
-      <div class="app-card" onclick="window.location.href='/wallet.html'">
-        <h2>🔐 Crypto Wallet</h2>
-        <span class="status">LIVE</span>
-        <p>Multi-wallet crypto management</p>
-        <ul class="features">
-          <li>✓ Coinbase integration</li>
-          <li>✓ Ledger hardware wallet</li>
-          <li>✓ Bitcoin tracking</li>
-          <li>✓ Transaction history</li>
-        </ul>
-      </div>
-
-      <div class="app-card" onclick="window.location.href='/ledger.html'" style="border-color: #7700FF;">
-        <h2>🔐 Ledger Hardware</h2>
-        <span class="status">READY</span>
-        <p>Secure hardware wallet via USB-C</p>
-        <ul class="features">
-          <li>✓ WebUSB connection</li>
-          <li>✓ Multi-account (BTC/ETH/SOL)</li>
-          <li>✓ Transaction signing</li>
-          <li>✓ Address verification</li>
-        </ul>
-      </div>
-
-      <div class="app-card" onclick="window.location.href='/integrations.html'">
-        <h2>🔗 Integrations</h2>
-        <span class="status">LIVE</span>
-        <p>External services & APIs</p>
-        <ul class="features">
-          <li>✓ ChatGPT custom GPT</li>
-          <li>✓ Discord server</li>
-          <li>✓ Google Drive</li>
-          <li>✓ Crypto exchanges</li>
-        </ul>
-      </div>
-
-      <div class="app-card" onclick="window.location.href='/integrations-live.html'" style="border-color: #FF0066;">
-        <h2>🔗 Live Integrations</h2>
-        <span class="status">NEW</span>
-        <p>Real-time API integrations</p>
-        <ul class="features">
-          <li>✓ GitHub repos viewer</li>
-          <li>✓ Live weather data</li>
-          <li>✓ Crypto prices</li>
-          <li>✓ Tech news feed</li>
-        </ul>
-      </div>
-
-      <div class="app-card" onclick="window.location.href='/terminal.html'" style="border-color: #00ff88;">
-        <h2>💻 Terminal</h2>
-        <span class="status">LIVE</span>
-        <p>Full-featured web terminal</p>
-        <ul class="features">
-          <li>✓ Command execution</li>
-          <li>✓ Agent management</li>
-          <li>✓ Blockchain commands</li>
-          <li>✓ Real-time API access</li>
-        </ul>
+    <!-- ── Header ── -->
+    <div class="dash-header">
+      <h1>Dashboard</h1>
+      <div class="live-row">
+        <span class="live-indicator">Live</span>
+        <span class="uptime-label" id="uptime-text">--</span>
       </div>
     </div>
 
-    <div class="payment-section">
-      <h2>💸 Support BlackRoad</h2>
-      <p>Help us build the future of AI operating systems</p>
-      <div class="payment-buttons">
-        <a href="https://krak.app/AAAAAAAA" target="_blank">Send via Krak →</a>
-        <a href="/" style="background: rgba(255,255,255,0.1);">Subscribe via Stripe →</a>
+    <!-- ── Stat Cards ── -->
+    <section class="dash-section">
+      <div class="stats-grid" id="stats-grid">
+        <div class="stat-card">
+          <div class="stat-accent"></div>
+          <div class="stat-value skeleton loading" id="stat-nodes">&nbsp;</div>
+          <div class="stat-label">Nodes Online</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-accent"></div>
+          <div class="stat-value skeleton loading" id="stat-agents">&nbsp;</div>
+          <div class="stat-label">Agents</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-accent"></div>
+          <div class="stat-value skeleton loading" id="stat-repos">&nbsp;</div>
+          <div class="stat-label">Repos</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-accent"></div>
+          <div class="stat-value skeleton loading" id="stat-domains">&nbsp;</div>
+          <div class="stat-label">Domains</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-accent"></div>
+          <div class="stat-value skeleton loading" id="stat-search">&nbsp;</div>
+          <div class="stat-label">Search Index</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-accent"></div>
+          <div class="stat-value skeleton loading" id="stat-uptime">&nbsp;</div>
+          <div class="stat-label">Uptime</div>
+        </div>
       </div>
-      <div class="crypto-address">
-        <strong>BTC:</strong> 3NJYuq8KA1xBea6JNg32XgDwjpvLkrR5VH
+    </section>
+
+    <div class="grad-bar"></div>
+
+    <!-- ── Fleet Status ── -->
+    <section class="dash-section">
+      <p class="section-label">Fleet</p>
+      <h2 class="section-title">Node Status</h2>
+      <div class="fleet-grid" id="fleet-grid">
+        <div class="fetch-error" id="fleet-loading">Loading fleet data...</div>
       </div>
-    </div>
-  </div>
+    </section>
+
+    <div class="grad-bar"></div>
+
+    <!-- ── Social Feed ── -->
+    <section class="dash-section">
+      <p class="section-label">Social</p>
+      <h2 class="section-title">Recent Feed</h2>
+      <div class="feed-list" id="feed-list">
+        <div class="fetch-error" id="feed-loading">Loading feed...</div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <span>BlackRoad OS, Inc.</span>
+    <span class="text-mono text-xs" id="footer-ts">--</span>
+  </footer>
+
+  <script>
+    const API = 'https://blackroad-live-stats.amundsonalexa.workers.dev/api/stats';
+    let firstLoad = true;
+
+    // ── Format seconds to "Xd Xh" ──
+    function fmtUptime(s) {
+      const d = Math.floor(s / 86400);
+      const h = Math.floor((s % 86400) / 3600);
+      return d + 'd ' + h + 'h';
+    }
+
+    // ── Animate a stat value ──
+    function setStat(id, value) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.classList.remove('skeleton', 'loading');
+      el.textContent = value;
+      if (firstLoad) {
+        el.classList.remove('loaded');
+        void el.offsetWidth; // force reflow
+        el.classList.add('loaded');
+      }
+    }
+
+    // ── Render fleet nodes ──
+    function renderFleet(nodes) {
+      const grid = document.getElementById('fleet-grid');
+      if (!nodes || !nodes.length) {
+        grid.innerHTML = '<div class="fetch-error">No fleet data</div>';
+        return;
+      }
+      grid.innerHTML = nodes.map(function(n) {
+        const online = n.status === 'online';
+        const dotClass = online ? 'live' : 'offline';
+        const diskPct = typeof n.disk === 'number' ? n.disk : parseInt(n.disk) || 0;
+        const temp = n.temp || '--';
+        const load = n.load || '--';
+        return '<div class="node-card">' +
+          '<div class="node-header">' +
+            '<span class="status-dot ' + dotClass + '"></span>' +
+            '<span class="node-name">' + esc(n.name) + '</span>' +
+          '</div>' +
+          '<div class="node-role">' + esc(n.role || '') + '</div>' +
+          '<div class="node-metrics">' +
+            '<div class="node-metric"><div class="node-metric-label">Temp</div><div class="node-metric-value">' + esc(String(temp)) + '</div></div>' +
+            '<div class="node-metric"><div class="node-metric-label">Load</div><div class="node-metric-value">' + esc(String(load)) + '</div></div>' +
+            '<div class="disk-bar"><div class="disk-bar-fill" style="width:' + diskPct + '%"></div></div>' +
+            '<div class="node-metric" style="grid-column:1/-1"><div class="node-metric-label">Disk</div><div class="node-metric-value">' + diskPct + '%</div></div>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    // ── Render social feed ──
+    function renderFeed(posts) {
+      const list = document.getElementById('feed-list');
+      if (!posts || !posts.length) {
+        list.innerHTML = '<div class="fetch-error">No recent posts</div>';
+        return;
+      }
+      list.innerHTML = posts.map(function(p) {
+        return '<div class="feed-item">' +
+          '<div class="feed-author">' + esc(p.author || 'unknown') + '</div>' +
+          '<div class="feed-content">' + esc(p.content || '') + '</div>' +
+          '<div class="feed-meta">' +
+            '<span>' + esc(p.ago || '') + '</span>' +
+            (p.depth != null ? '<span class="feed-depth">depth ' + esc(String(p.depth)) + '</span>' : '') +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    // ── Escape HTML ──
+    function esc(s) {
+      var d = document.createElement('div');
+      d.textContent = s;
+      return d.innerHTML;
+    }
+
+    // ── Fetch and update ──
+    async function refresh() {
+      try {
+        var res = await fetch(API);
+        if (!res.ok) throw new Error(res.status);
+        var d = await res.json();
+
+        setStat('stat-nodes', d.fleet ? d.fleet.nodes_online : '--');
+        setStat('stat-agents', d.agents ? d.agents.active : '--');
+        setStat('stat-repos', d.repos ? d.repos.total : '--');
+        setStat('stat-domains', d.infra ? d.infra.domains : '--');
+        setStat('stat-search', d.search ? d.search.total_indexed.toLocaleString() : '--');
+        setStat('stat-uptime', d.uptime_seconds ? fmtUptime(d.uptime_seconds) : '--');
+
+        document.getElementById('uptime-text').textContent =
+          d.uptime_seconds ? fmtUptime(d.uptime_seconds) + ' uptime' : '';
+
+        if (d.fleet && d.fleet.nodes) renderFleet(d.fleet.nodes);
+        if (d.social && d.social.recent) renderFeed(d.social.recent);
+
+        document.getElementById('footer-ts').textContent =
+          d.timestamp ? 'Last update: ' + new Date(d.timestamp).toLocaleTimeString() : '';
+
+        firstLoad = false;
+      } catch (e) {
+        console.error('Dashboard fetch error:', e);
+        if (firstLoad) {
+          document.getElementById('fleet-loading').textContent = 'Could not reach stats API';
+          document.getElementById('feed-loading').textContent = 'Could not reach stats API';
+        }
+      }
+    }
+
+    // ── Init ──
+    refresh();
+    setInterval(refresh, 10000);
+  </script>
 </body>
 </html>

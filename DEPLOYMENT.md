@@ -342,7 +342,7 @@ python3 main.py
 🟢 **Backend API**: All endpoints tested and working
 🟢 **Authentication**: Register, login, JWT tokens
 🟢 **AI Chat**: Real-time messaging with backend
-🟢 **Agents**: Spawn, list, manage 30,000 agents
+🟢 **Agents**: Spawn, list, manage 35 agents
 🟢 **Blockchain**: Transactions and blocks
 🟢 **Payments**: Stripe checkout sessions
 🟢 **Frontend**: All apps deployed and accessible
@@ -377,4 +377,4 @@ python3 main.py
 
 **🛣️ BlackRoad OS - The future of AI operating systems**
 
-Built with FastAPI, vanilla JavaScript, and 30,000 AI agents.
+Built with FastAPI, vanilla JavaScript, and 35 AI agents.

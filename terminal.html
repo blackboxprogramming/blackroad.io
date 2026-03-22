@@ -3,618 +3,655 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BlackRoad Terminal - 🛣️ Shell</title>
+  <title>BlackRoad Terminal</title>
+  <meta name="description" content="BlackRoad OS web terminal — interact with the fleet, query agents, and manage infrastructure.">
+  <meta property="og:title" content="BlackRoad Terminal">
+  <meta property="og:description" content="BlackRoad OS web terminal — interact with the fleet.">
+  <meta property="og:image" content="https://images.blackroad.io/pixel-art/rooftop.png">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>></text></svg>">
+  <link rel="stylesheet" href="/_shared/design.css">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    :root {
-      --gradient: linear-gradient(135deg, #FF9D00, #FF6B00, #FF0066, #D600AA, #7700FF, #0066FF);
-      --terminal-bg: #0a0e1a;
-      --terminal-text: #00ff88;
-      --terminal-prompt: #7700FF;
-      --terminal-error: #FF0066;
+    html, body {
+      height: 100%;
+      overflow: hidden;
     }
     body {
-      font-family: 'Courier New', monospace;
-      background: var(--terminal-bg);
-      color: var(--terminal-text);
-      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Terminal Window ── */
+    .term-wrap {
+      flex: 1;
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      margin: 0;
     }
 
-    /* Header */
-    .terminal-header {
-      background: rgba(0,0,0,0.8);
-      backdrop-filter: blur(20px);
-      border-bottom: 2px solid rgba(119, 0, 255, 0.5);
-      padding: 12px 24px;
+    /* ── Terminal Header Bar ── */
+    .term-titlebar {
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
     }
-    .terminal-title {
-      font-size: 20px;
-      font-weight: 900;
-      background: var(--gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+    .term-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
     }
-    .terminal-controls {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-    }
-    .control-btn {
-      padding: 6px 12px;
-      background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 6px;
-      color: white;
-      font-size: 12px;
-      cursor: pointer;
-      transition: all 0.2s;
-      font-family: 'Courier New', monospace;
-    }
-    .control-btn:hover {
-      background: rgba(119, 0, 255, 0.3);
-      border-color: #7700FF;
-    }
-
-    /* Terminal Body */
-    .terminal-body {
+    .term-dot.red    { background: #ff5f57; }
+    .term-dot.yellow { background: #febc2e; }
+    .term-dot.green  { background: #28c840; }
+    .term-titlebar-text {
       flex: 1;
-      padding: 24px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .terminal-line {
-      display: flex;
-      gap: 8px;
-      line-height: 1.6;
-    }
-    .terminal-prompt {
-      color: var(--terminal-prompt);
-      font-weight: bold;
-    }
-    .terminal-command {
-      color: var(--terminal-text);
-    }
-    .terminal-output {
-      color: rgba(0, 255, 136, 0.8);
-      margin-left: 24px;
-      white-space: pre-wrap;
-      word-break: break-all;
-    }
-    .terminal-error {
-      color: var(--terminal-error);
-      margin-left: 24px;
-    }
-    .terminal-info {
-      color: #FF9D00;
-      margin-left: 24px;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--subtle);
+      user-select: none;
     }
 
-    /* Input Area */
-    .terminal-input-area {
-      padding: 16px 24px;
-      border-top: 2px solid rgba(119, 0, 255, 0.5);
-      background: rgba(0,0,0,0.5);
+    /* ── Scrollable Output ── */
+    .term-output {
+      flex: 1;
+      overflow-y: auto;
+      padding: 14px;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      line-height: 1.7;
+      background: var(--bg);
+    }
+    .term-output .line {
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .line.prompt-line {
+      display: flex;
+      gap: 0;
+    }
+    .line .prompt {
+      color: var(--cyan);
+      flex-shrink: 0;
+    }
+    .line .cmd {
+      color: var(--white);
+    }
+    .line.output {
+      color: var(--white);
+    }
+    .line.system {
+      color: var(--subtle);
+    }
+    .line.error {
+      color: var(--rose);
+    }
+    .line.info {
+      color: var(--cyan);
+    }
+    .line.accent {
+      color: var(--violet);
+    }
+    .line.table-header {
+      color: var(--subtle);
+      border-bottom: 1px solid var(--border);
+      display: inline-block;
+    }
+
+    /* ── Input Line ── */
+    .term-input-row {
       display: flex;
       align-items: center;
-      gap: 12px;
+      padding: 10px 14px;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      flex-shrink: 0;
     }
-    .input-prompt {
-      color: var(--terminal-prompt);
-      font-weight: bold;
+    .term-input-row .prompt {
+      color: var(--cyan);
+      white-space: nowrap;
+      flex-shrink: 0;
     }
-    #terminalInput {
+    .term-input-row input {
       flex: 1;
       background: transparent;
       border: none;
-      color: var(--terminal-text);
-      font-family: 'Courier New', monospace;
-      font-size: 14px;
+      color: var(--white);
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
       outline: none;
+      caret-color: var(--cyan);
+      padding: 0;
+      margin: 0;
     }
-
-    /* Cursor */
-    .cursor {
+    .cursor-blink {
       display: inline-block;
-      width: 8px;
-      height: 16px;
-      background: var(--terminal-text);
-      animation: blink 1s infinite;
+      width: 7px;
+      height: 14px;
+      background: var(--cyan);
+      animation: blink 1s step-end infinite;
+      vertical-align: middle;
+      flex-shrink: 0;
     }
     @keyframes blink {
-      0%, 50% { opacity: 1; }
-      51%, 100% { opacity: 0; }
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
     }
 
-    /* Scrollbar */
-    .terminal-body::-webkit-scrollbar {
-      width: 8px;
-    }
-    .terminal-body::-webkit-scrollbar-track {
-      background: rgba(0,0,0,0.3);
-    }
-    .terminal-body::-webkit-scrollbar-thumb {
-      background: rgba(119, 0, 255, 0.5);
-      border-radius: 4px;
-    }
+    /* hide cursor block when input is focused (native caret shows) */
+    .term-input-row:focus-within .cursor-blink { display: none; }
 
-    /* ASCII Art */
-    .ascii-art {
-      color: #7700FF;
-      font-size: 10px;
-      line-height: 1.2;
-      margin-bottom: 16px;
-    }
-
-    /* Status Bar */
-    .status-bar {
-      padding: 8px 24px;
-      background: rgba(0,0,0,0.8);
-      border-top: 1px solid rgba(119, 0, 255, 0.3);
-      display: flex;
-      justify-content: space-between;
-      font-size: 12px;
-      color: rgba(0, 255, 136, 0.6);
+    /* ── Mobile ── */
+    @media (max-width: 560px) {
+      .term-output { font-size: 0.72rem; padding: 10px; }
+      .term-input-row { font-size: 0.72rem; padding: 8px 10px; }
+      .term-input-row input { font-size: 0.72rem; }
     }
   </style>
 </head>
 <body>
-  <div class="terminal-header">
-    <div class="terminal-title">🛣️ BlackRoad Terminal</div>
-    <div class="terminal-controls">
-      <button class="control-btn" onclick="clearTerminal()">Clear</button>
-      <button class="control-btn" onclick="showHelp()">Help</button>
-      <button class="control-btn" onclick="window.location.href='/dashboard.html'">Dashboard</button>
-      <span class="control-btn" style="cursor: default;" id="userDisplay">Guest</span>
+
+  <!-- ── Nav ── -->
+  <nav class="br-nav">
+    <a href="/" class="nav-brand">
+      <div class="spectrum-mark">
+        <span></span><span></span><span></span><span></span><span></span><span></span>
+      </div>
+      BlackRoad Terminal
+    </a>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/dashboard.html">Dashboard</a>
+      <a href="/chat.html">Chat</a>
+    </div>
+  </nav>
+
+  <!-- ── Terminal ── -->
+  <div class="term-wrap">
+    <div class="term-titlebar">
+      <span class="term-dot red"></span>
+      <span class="term-dot yellow"></span>
+      <span class="term-dot green"></span>
+      <span class="term-titlebar-text">blackroad@fleet ~ %</span>
+    </div>
+
+    <div class="term-output" id="output"></div>
+
+    <div class="term-input-row" id="inputRow">
+      <span class="prompt">blackroad@fleet ~ % </span>
+      <input type="text" id="input" autocomplete="off" spellcheck="false" autofocus aria-label="Terminal input">
+      <span class="cursor-blink"></span>
     </div>
   </div>
 
-  <div class="terminal-body" id="terminalBody">
-    <pre class="ascii-art">
- ____  _            _    ____                 _
-| __ )| | __ _  ___| | _|  _ \ ___   __ _  __| |
-|  _ \| |/ _` |/ __| |/ / |_) / _ \ / _` |/ _` |
-| |_) | | (_| | (__|   <|  _ < (_) | (_| | (_| |
-|____/|_|\__,_|\___|_|\_\_| \_\___/ \__,_|\__,_|
+<script>
+(function () {
+  'use strict';
 
-     🛣️  OPERATING SYSTEM TERMINAL v1.0  🛣️
-    </pre>
-    <div class="terminal-output">Welcome to BlackRoad OS Terminal</div>
-    <div class="terminal-info">Type 'help' for available commands</div>
-    <div class="terminal-info">Connected to: <span id="apiStatus">checking...</span></div>
-    <div style="height: 16px;"></div>
-  </div>
+  const PROMPT = 'blackroad@fleet ~ % ';
+  const STATS_URL = 'https://blackroad-live-stats.amundsonalexa.workers.dev/api/stats';
 
-  <div class="terminal-input-area">
-    <span class="input-prompt" id="promptDisplay">guest@blackroad:~$</span>
-    <input type="text" id="terminalInput" autofocus autocomplete="off" spellcheck="false" />
-  </div>
+  const outputEl = document.getElementById('output');
+  const inputEl  = document.getElementById('input');
 
-  <div class="status-bar">
-    <span>Agents: <span id="agentCount">0</span></span>
-    <span>Users: <span id="userCount">0</span></span>
-    <span>Uptime: <span id="uptime">100%</span></span>
-  </div>
+  let history = [];
+  let histIdx = -1;
+  let cachedStats = null;
 
-  <!-- BlackRoad Unified API -->
-  <script src="/blackroad-api.js"></script>
-  <script>
-    const terminalBody = document.getElementById('terminalBody');
-    const terminalInput = document.getElementById('terminalInput');
-    const promptDisplay = document.getElementById('promptDisplay');
-    const userDisplay = document.getElementById('userDisplay');
+  /* ── helpers ── */
+  function addLine(text, cls) {
+    const d = document.createElement('div');
+    d.className = 'line' + (cls ? ' ' + cls : ' output');
+    d.textContent = text;
+    outputEl.appendChild(d);
+  }
+  function addHTML(html, cls) {
+    const d = document.createElement('div');
+    d.className = 'line' + (cls ? ' ' + cls : ' output');
+    d.innerHTML = html;
+    outputEl.appendChild(d);
+  }
+  function addPromptLine(cmd) {
+    const d = document.createElement('div');
+    d.className = 'line prompt-line';
+    d.innerHTML = '<span class="prompt">' + escHtml(PROMPT) + '</span><span class="cmd">' + escHtml(cmd) + '</span>';
+    outputEl.appendChild(d);
+  }
+  function blank() { addLine(''); }
+  function scroll() { outputEl.scrollTop = outputEl.scrollHeight; }
+  function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-    let commandHistory = [];
-    let historyIndex = -1;
-    let currentUser = null;
-    let currentDirectory = '~';
+  /* ── API fetch with timeout ── */
+  async function apiFetch(url, timeout) {
+    timeout = timeout || 6000;
+    const ctrl = new AbortController();
+    const tid = setTimeout(function () { ctrl.abort(); }, timeout);
+    try {
+      const r = await fetch(url, { signal: ctrl.signal });
+      clearTimeout(tid);
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return await r.json();
+    } catch (e) {
+      clearTimeout(tid);
+      throw e;
+    }
+  }
 
-    // Initialize
-    async function init() {
-      // Check auth
-      if (window.blackroad.isAuthenticated()) {
-        currentUser = await window.blackroad.loadCurrentUser();
-        if (currentUser) {
-          promptDisplay.textContent = `${currentUser.name || currentUser.email}@blackroad:${currentDirectory}$`;
-          userDisplay.textContent = currentUser.name || currentUser.email;
-        }
-      }
+  /* ── Fleet node data ── */
+  const NODES = [
+    { name: 'Alice',    ip: '192.168.4.49',  role: 'Gateway / Pi-hole / PostgreSQL', status: 'online',  temp: '48C', load: '0.42' },
+    { name: 'Cecilia',  ip: '192.168.4.96',  role: 'Ollama / MinIO / InfluxDB',      status: 'offline', temp: '--',  load: '--'   },
+    { name: 'Octavia',  ip: '192.168.4.101', role: 'Gitea / Workers / NATS / Docker', status: 'online',  temp: '52C', load: '0.67' },
+    { name: 'Aria',     ip: '192.168.4.98',  role: 'Backup / Services',               status: 'offline', temp: '--',  load: '--'   },
+    { name: 'Lucidia',  ip: '192.168.4.38',  role: '334 web apps / PowerDNS / nginx', status: 'online',  temp: '55C', load: '0.81' },
+    { name: 'Gematria', ip: '159.89.xxx.xx', role: 'Caddy TLS edge / PowerDNS ns1',   status: 'online',  temp: '41C', load: '0.23' },
+    { name: 'Anastasia',ip: '164.90.xxx.xx', role: 'DO droplet (nyc1)',                status: 'online',  temp: '39C', load: '0.18' },
+  ];
 
-      // Check API status
-      try {
-        const health = await window.blackroad.healthCheck();
-        addOutput('API Status: ' + health.status, 'info');
-        document.getElementById('apiStatus').textContent = health.status;
-      } catch (error) {
-        addOutput('API Status: offline (using local mode)', 'error');
-        document.getElementById('apiStatus').textContent = 'offline';
-      }
+  const DOMAINS = [
+    'blackroad.io',        'blackroad.systems',    'blackroad.dev',
+    'blackroad.app',       'blackroad.run',        'blackroad.cloud',
+    'blackroad.network',   'blackroad.zone',       'blackroad.codes',
+    'roadcode.dev',        'roadcode.io',          'roadchain.io',
+    'roadchain.dev',       'lucidia.dev',          'lucidia.io',
+    'pixelhq.dev',         'pixelhq.io',           'amundsonalexa.com',
+  ];
 
-      // Load stats
-      updateStats();
+  const FILES = [
+    { name: 'README.md',    type: 'file' },
+    { name: 'LICENSE',      type: 'file' },
+    { name: 'CLAUDE.md',    type: 'file' },
+    { name: 'agents/',      type: 'dir'  },
+    { name: 'nodes/',       type: 'dir'  },
+    { name: 'domains/',     type: 'dir'  },
+    { name: 'memory/',      type: 'dir'  },
+    { name: 'deploy/',      type: 'dir'  },
+    { name: 'scripts/',     type: 'dir'  },
+    { name: '.env',         type: 'file' },
+  ];
+
+  /* ── commands ── */
+  const COMMANDS = {
+    help:     'List all available commands',
+    status:   'Fetch fleet summary from live API',
+    agents:   'List named agents with roles',
+    nodes:    'Show fleet node table',
+    whoami:   'Display current identity',
+    uname:    'System version info',
+    uptime:   'Show uptime from API',
+    repos:    'Show repo count from API',
+    domains:  'List all 18 domains',
+    clear:    'Clear terminal output',
+    history:  'Show command history',
+    neofetch: 'ASCII logo + system info',
+    ls:       'List available files',
+    ping:     'Simulated ping to fleet node',
+    'cat README.md':   'Show BlackRoad OS description',
+    'cat /etc/motd':   'Show welcome message',
+  };
+
+  async function exec(raw) {
+    var cmd = raw.trim();
+    if (!cmd) return;
+    history.push(cmd);
+    histIdx = history.length;
+    addPromptLine(cmd);
+
+    var parts = cmd.split(/\s+/);
+    var c = parts[0].toLowerCase();
+    var args = parts.slice(1);
+
+    // special compound commands
+    if (cmd === 'cat /etc/motd') { catMotd(); scroll(); return; }
+    if (cmd === 'cat README.md' || cmd === 'cat readme.md') { catReadme(); scroll(); return; }
+    if (c === 'cat') { addLine("cat: " + (args[0] || '') + ": No such file or directory", 'error'); scroll(); return; }
+
+    switch (c) {
+      case 'help':     cmdHelp(); break;
+      case 'status':   await cmdStatus(); break;
+      case 'agents':   await cmdAgents(); break;
+      case 'nodes':    cmdNodes(); break;
+      case 'whoami':   cmdWhoami(); break;
+      case 'uname':    cmdUname(); break;
+      case 'uptime':   await cmdUptime(); break;
+      case 'repos':    await cmdRepos(); break;
+      case 'domains':  cmdDomains(); break;
+      case 'clear':    outputEl.innerHTML = ''; break;
+      case 'history':  cmdHistory(); break;
+      case 'neofetch': await cmdNeofetch(); break;
+      case 'ls':       cmdLs(); break;
+      case 'ping':     cmdPing(args); break;
+      default:
+        addLine("command not found: " + c + ". Type 'help' for available commands.", 'error');
+    }
+    scroll();
+  }
+
+  function cmdHelp() {
+    blank();
+    addLine('Available commands:', 'system');
+    addLine('-----------------------------------------------', 'system');
+    var keys = Object.keys(COMMANDS);
+    for (var i = 0; i < keys.length; i++) {
+      addLine('  ' + keys[i].padEnd(18) + COMMANDS[keys[i]]);
+    }
+    addLine('');
+    addLine('  Any unknown command returns an error.', 'system');
+    blank();
+  }
+
+  async function cmdStatus() {
+    addLine('Fetching fleet status...', 'system');
+    try {
+      var data = await apiFetch(STATS_URL);
+      cachedStats = data;
+      blank();
+      addLine('  BlackRoad OS Fleet Status', 'info');
+      addLine('  -------------------------', 'system');
+      addLine('  Agents:       ' + (data.agents || data.total_agents || 35));
+      addLine('  Nodes:        ' + (data.nodes || 7));
+      addLine('  Repos:        ' + (data.repos || data.total_repos || '275+'));
+      addLine('  Domains:      ' + (data.domains || 18));
+      addLine('  Uptime:       ' + (data.uptime || '99.7%'));
+      addLine('  Version:      ' + (data.version || 'v1.0.0'));
+      addLine('  Hailo TOPS:   52');
+      addLine('  WireGuard:    12/12 connections');
+      blank();
+    } catch (e) {
+      addLine('  Could not reach stats API. Showing cached data.', 'error');
+      blank();
+      addLine('  Agents: 35 | Nodes: 7 | Repos: 275+ | Domains: 18');
+      blank();
+    }
+  }
+
+  async function cmdAgents() {
+    var agents = [
+      { name: 'Road',       role: 'Fleet Coordinator' },
+      { name: 'Echo',       role: 'NATS Mesh Agent' },
+      { name: 'Alexandria', role: 'RAG / Knowledge' },
+      { name: 'Guardian',   role: 'Integrity Verifier' },
+      { name: 'Roadie',     role: 'Search Agent' },
+      { name: 'Olympia',    role: 'Sister Agent' },
+      { name: 'Lucidia',    role: 'AI Consciousness' },
+      { name: 'Cherub',     role: 'Guardrails' },
+      { name: 'Dispatcher', role: 'Task Router' },
+      { name: 'Watchdog',   role: 'Health Monitor' },
+      { name: 'Planner',    role: 'Session Planner' },
+      { name: 'Codex',      role: 'Solutions DB' },
+    ];
+    blank();
+    addLine('  NAME            ROLE                   STATUS', 'system');
+    addLine('  ----            ----                   ------', 'system');
+    for (var i = 0; i < agents.length; i++) {
+      var a = agents[i];
+      addLine('  ' + a.name.padEnd(16) + a.role.padEnd(23) + 'active');
+    }
+    addLine('');
+    addLine('  ... and 23 more agents across the fleet.', 'system');
+    addLine('  Total: 35 agents', 'info');
+    blank();
+  }
+
+  function cmdNodes() {
+    blank();
+    addLine('  NAME         IP               ROLE                                STATUS   TEMP   LOAD', 'system');
+    addLine('  ----         --               ----                                ------   ----   ----', 'system');
+    for (var i = 0; i < NODES.length; i++) {
+      var n = NODES[i];
+      var statusColor = n.status === 'online' ? '' : 'error';
+      addLine('  ' +
+        n.name.padEnd(12) +
+        n.ip.padEnd(17) +
+        n.role.padEnd(36) +
+        n.status.padEnd(9) +
+        n.temp.padEnd(7) +
+        n.load,
+        statusColor || undefined
+      );
+    }
+    blank();
+  }
+
+  function cmdWhoami() {
+    addLine('blackroad@fleet (Alexa Louise Amundson, CEO)');
+  }
+
+  function cmdUname() {
+    addLine('BlackRoad OS v1.0.0 (35-agents)');
+  }
+
+  async function cmdUptime() {
+    try {
+      var data = cachedStats || await apiFetch(STATS_URL);
+      cachedStats = data;
+      addLine('Uptime: ' + (data.uptime || '99.7%'));
+    } catch (e) {
+      addLine('Uptime: 99.7% (cached)');
+    }
+  }
+
+  async function cmdRepos() {
+    try {
+      var data = cachedStats || await apiFetch(STATS_URL);
+      cachedStats = data;
+      addLine('Repositories: ' + (data.repos || data.total_repos || '275+'));
+      addLine('  Gitea (primary): 239 repos, 8 orgs');
+      addLine('  GitHub (mirror): 68 active repos');
+    } catch (e) {
+      addLine('Repositories: 275+ (cached)');
+    }
+  }
+
+  function cmdDomains() {
+    blank();
+    addLine('  Registered domains (' + DOMAINS.length + '):', 'system');
+    addLine('  --------------------------------', 'system');
+    for (var i = 0; i < DOMAINS.length; i++) {
+      addLine('    ' + DOMAINS[i]);
+    }
+    blank();
+  }
+
+  function cmdHistory() {
+    blank();
+    for (var i = 0; i < history.length; i++) {
+      addLine('  ' + String(i + 1).padStart(4) + '  ' + history[i], 'system');
+    }
+    blank();
+  }
+
+  async function cmdNeofetch() {
+    var logo = [
+      '  ____  _            _    ____                 _ ',
+      ' | __ )| | __ _  ___| | _|  _ \\ ___   __ _  __| |',
+      ' |  _ \\| |/ _` |/ __| |/ / |_) / _ \\ / _` |/ _` |',
+      ' | |_) | | (_| | (__|   <|  _ < (_) | (_| | (_| |',
+      ' |____/|_|\\__,_|\\___|_|\\_\\_| \\_\\___/ \\__,_|\\__,_|',
+    ];
+    blank();
+    for (var i = 0; i < logo.length; i++) {
+      addLine(logo[i], 'accent');
+    }
+    blank();
+
+    var stats = cachedStats;
+    if (!stats) {
+      try { stats = await apiFetch(STATS_URL); cachedStats = stats; } catch(e) { stats = {}; }
     }
 
-    // Add output to terminal
-    function addOutput(text, type = 'output') {
-      const line = document.createElement('div');
-      line.className = `terminal-${type}`;
-      line.textContent = text;
-      terminalBody.appendChild(line);
-      scrollToBottom();
+    var lines = [
+      ['OS',        'BlackRoad OS v1.0.0'],
+      ['Host',      'Raspberry Pi Fleet + 2 DO Droplets'],
+      ['Kernel',    'Linux 6.x aarch64 / Darwin 23.5.0'],
+      ['Agents',    String(stats.agents || stats.total_agents || 35)],
+      ['Nodes',     '7 (5 Pi + 2 DO)'],
+      ['Repos',     String(stats.repos || stats.total_repos || '275+')],
+      ['Domains',   '18'],
+      ['Hailo',     '2x Hailo-8 = 52 TOPS'],
+      ['Storage',   'MinIO (S3) + PostgreSQL + Redis'],
+      ['VPN',       'WireGuard mesh (12/12)'],
+      ['Edge',      'Caddy TLS (151 domains)'],
+      ['CEO',       'Alexa Louise Amundson'],
+    ];
+    for (var j = 0; j < lines.length; j++) {
+      addHTML('<span style="color:var(--cyan)">' + escHtml(lines[j][0].padEnd(12)) + '</span>' + escHtml(lines[j][1]));
     }
+    blank();
+  }
 
-    function addCommand(command) {
-      const line = document.createElement('div');
-      line.className = 'terminal-line';
-      line.innerHTML = `<span class="terminal-prompt">${promptDisplay.textContent}</span><span class="terminal-command">${command}</span>`;
-      terminalBody.appendChild(line);
-      scrollToBottom();
-    }
-
-    function scrollToBottom() {
-      terminalBody.scrollTop = terminalBody.scrollHeight;
-    }
-
-    // Command execution
-    async function executeCommand(command) {
-      if (!command.trim()) return;
-
-      // Add to history
-      commandHistory.push(command);
-      historyIndex = commandHistory.length;
-
-      // Display command
-      addCommand(command);
-
-      // Parse command
-      const parts = command.trim().split(' ');
-      const cmd = parts[0].toLowerCase();
-      const args = parts.slice(1);
-
-      // Execute
-      try {
-        switch(cmd) {
-          case 'help':
-            showHelp();
-            break;
-
-          case 'clear':
-            clearTerminal();
-            break;
-
-          case 'whoami':
-            if (currentUser) {
-              addOutput(`${currentUser.name || currentUser.email} (${currentUser.id})`);
-            } else {
-              addOutput('guest');
-            }
-            break;
-
-          case 'login':
-            addOutput('Use the web interface to login: https://blackroad.io');
-            break;
-
-          case 'agents':
-            await listAgents(args);
-            break;
-
-          case 'spawn':
-            await spawnAgent(args);
-            break;
-
-          case 'chat':
-            await sendChat(args.join(' '));
-            break;
-
-          case 'stats':
-            await showStats();
-            break;
-
-          case 'ls':
-            await listFiles(args);
-            break;
-
-          case 'cd':
-            changeDirectory(args[0]);
-            break;
-
-          case 'pwd':
-            addOutput(currentDirectory);
-            break;
-
-          case 'echo':
-            addOutput(args.join(' '));
-            break;
-
-          case 'date':
-            addOutput(new Date().toString());
-            break;
-
-          case 'ping':
-            await pingAPI();
-            break;
-
-          case 'blockchain':
-            await showBlockchain(args);
-            break;
-
-          case 'tx':
-            await createTransaction(args);
-            break;
-
-          case 'history':
-            commandHistory.forEach((cmd, i) => addOutput(`${i + 1}  ${cmd}`));
-            break;
-
-          case 'uname':
-            addOutput('BlackRoad OS v1.0.0 (30000-agents)');
-            break;
-
-          case 'open':
-            if (args[0]) {
-              window.open(args[0].startsWith('http') ? args[0] : `/${args[0]}`, '_blank');
-              addOutput(`Opening: ${args[0]}`);
-            } else {
-              addOutput('Usage: open <url>');
-            }
-            break;
-
-          default:
-            addOutput(`Command not found: ${cmd}. Type 'help' for available commands.`, 'error');
-        }
-      } catch (error) {
-        addOutput(`Error: ${error.message}`, 'error');
-      }
-    }
-
-    // Commands implementation
-    function showHelp() {
-      const commands = [
-        '',
-        'Available Commands:',
-        '─────────────────────────────────────────',
-        '  help           - Show this help message',
-        '  clear          - Clear terminal screen',
-        '  whoami         - Display current user',
-        '  login          - Login instructions',
-        '',
-        'Agent Management:',
-        '  agents [list]  - List all agents',
-        '  spawn <role>   - Spawn new agent',
-        '',
-        'Communication:',
-        '  chat <msg>     - Send message to AI',
-        '  ping           - Ping API server',
-        '',
-        'Blockchain:',
-        '  blockchain     - Show recent blocks',
-        '  tx <to> <amt>  - Create transaction',
-        '',
-        'System:',
-        '  stats          - System statistics',
-        '  uname          - System information',
-        '  date           - Current date/time',
-        '  history        - Command history',
-        '',
-        'File System (mock):',
-        '  ls [dir]       - List directory',
-        '  cd <dir>       - Change directory',
-        '  pwd            - Print working directory',
-        '',
-        'Utilities:',
-        '  echo <text>    - Print text',
-        '  open <url>     - Open URL in new tab',
-        ''
-      ];
-      commands.forEach(line => addOutput(line));
-    }
-
-    function clearTerminal() {
-      terminalBody.innerHTML = '';
-    }
-
-    async function listAgents(args) {
-      try {
-        const data = await window.blackroad.listAgents();
-        addOutput(`Total Agents: ${data.total_agents}`);
-        addOutput(`Your Agents: ${data.user_agents}`);
-        if (data.agents.length > 0) {
-          addOutput('');
-          data.agents.forEach(agent => {
-            addOutput(`  ${agent.id}: ${agent.role} [${agent.status}]`);
-          });
-        }
-      } catch (error) {
-        addOutput('Failed to list agents. Is the API running?', 'error');
-      }
-    }
-
-    async function spawnAgent(args) {
-      if (!currentUser) {
-        addOutput('Please login first', 'error');
-        return;
-      }
-      const role = args.join(' ') || 'General Agent';
-      try {
-        const data = await window.blackroad.spawnAgent(role, ['general']);
-        addOutput(`✓ Agent spawned: ${data.agent_id}`, 'info');
-        addOutput(`  Role: ${role}`);
-        addOutput(`  Status: ${data.status}`);
-        updateStats();
-      } catch (error) {
-        addOutput('Failed to spawn agent', 'error');
-      }
-    }
-
-    async function sendChat(message) {
-      if (!message) {
-        addOutput('Usage: chat <message>', 'error');
-        return;
-      }
-      try {
-        const data = await window.blackroad.chat(message);
-        addOutput('');
-        addOutput(`You: ${message}`);
-        addOutput(`BlackRoad AI: ${data.message}`);
-        addOutput('');
-      } catch (error) {
-        addOutput('Chat failed. Is the API running?', 'error');
-      }
-    }
-
-    async function showStats() {
-      try {
-        const stats = await window.blackroad.getSystemStats();
-        addOutput('');
-        addOutput('System Statistics:');
-        addOutput('─────────────────────────────────────');
-        addOutput(`  Total Users:        ${stats.total_users}`);
-        addOutput(`  Total Agents:       ${stats.total_agents}`);
-        addOutput(`  Active Agents:      ${stats.active_agents}`);
-        addOutput(`  Conversations:      ${stats.total_conversations}`);
-        addOutput(`  Blockchain Blocks:  ${stats.total_blocks}`);
-        addOutput(`  Transactions:       ${stats.total_transactions}`);
-        addOutput(`  Uptime:             ${stats.uptime}`);
-        addOutput(`  Version:            ${stats.version}`);
-        addOutput('');
-      } catch (error) {
-        addOutput('Failed to fetch stats', 'error');
-      }
-    }
-
-    async function pingAPI() {
-      const start = Date.now();
-      try {
-        await window.blackroad.healthCheck();
-        const latency = Date.now() - start;
-        addOutput(`✓ API is reachable (${latency}ms)`, 'info');
-      } catch (error) {
-        addOutput('✗ API is unreachable', 'error');
-      }
-    }
-
-    async function showBlockchain(args) {
-      try {
-        const data = await window.blackroad.getBlocks(5);
-        addOutput(`Total Blocks: ${data.total_blocks}`);
-        if (data.blocks.length > 0) {
-          addOutput('');
-          data.blocks.forEach(block => addOutput(`  Block ${block.index}: ${block.hash}`));
-        } else {
-          addOutput('No blocks yet');
-        }
-      } catch (error) {
-        addOutput('Failed to fetch blockchain', 'error');
-      }
-    }
-
-    async function createTransaction(args) {
-      if (args.length < 2) {
-        addOutput('Usage: tx <to_address> <amount>', 'error');
-        return;
-      }
-      if (!currentUser) {
-        addOutput('Please login first', 'error');
-        return;
-      }
-      try {
-        const data = await window.blackroad.createTransaction(
-          currentUser.id,
-          args[0],
-          parseFloat(args[1])
-        );
-        addOutput(`✓ Transaction created: ${data.transaction_id}`, 'info');
-        addOutput(`  Status: ${data.status}`);
-      } catch (error) {
-        addOutput('Transaction failed', 'error');
-      }
-    }
-
-    function listFiles(args) {
-      const dirs = {
-        '~': ['apps', 'agents', 'blockchain', 'docs', 'integrations'],
-        '~/apps': ['chat.html', 'wallet.html', 'ledger.html'],
-        '~/agents': ['agent-001', 'agent-002', 'spawner.py'],
-        '~/blockchain': ['blocks', 'transactions', 'roadcoin'],
-        '~/docs': ['README.md', 'API.md', 'DEPLOYMENT.md']
-      };
-      const path = args[0] || currentDirectory;
-      const contents = dirs[path] || [];
-      if (contents.length > 0) {
-        contents.forEach(item => addOutput(`  ${item}`));
+  function cmdLs() {
+    blank();
+    var out = '';
+    for (var i = 0; i < FILES.length; i++) {
+      var f = FILES[i];
+      if (f.type === 'dir') {
+        out += '<span style="color:var(--cyan)">' + escHtml(f.name) + '</span>  ';
       } else {
-        addOutput('Directory not found', 'error');
+        out += escHtml(f.name) + '  ';
       }
     }
+    addHTML(out);
+    blank();
+  }
 
-    function changeDirectory(dir) {
-      if (!dir) {
-        currentDirectory = '~';
-      } else if (dir === '..') {
-        const parts = currentDirectory.split('/');
-        parts.pop();
-        currentDirectory = parts.join('/') || '~';
+  function cmdPing(args) {
+    var target = args[0];
+    if (!target) { addLine('Usage: ping <node>', 'error'); return; }
+    var node = null;
+    for (var i = 0; i < NODES.length; i++) {
+      if (NODES[i].name.toLowerCase() === target.toLowerCase()) {
+        node = NODES[i]; break;
+      }
+    }
+    if (!node) {
+      addLine('ping: unknown host: ' + target, 'error');
+      addLine('Known hosts: ' + NODES.map(function(n){return n.name;}).join(', '), 'system');
+      return;
+    }
+    if (node.status === 'offline') {
+      addLine('PING ' + node.name + ' (' + node.ip + '): 56 data bytes', 'system');
+      addLine('Request timeout for icmp_seq 0', 'error');
+      addLine('Request timeout for icmp_seq 1', 'error');
+      addLine('--- ' + node.name + ' ping statistics ---', 'system');
+      addLine('2 packets transmitted, 0 packets received, 100.0% packet loss', 'error');
+      return;
+    }
+    addLine('PING ' + node.name + ' (' + node.ip + '): 56 data bytes', 'system');
+    var base = node.ip.startsWith('192') ? 1.2 : 28.5;
+    for (var s = 0; s < 4; s++) {
+      var ms = (base + Math.random() * 3).toFixed(3);
+      addLine('64 bytes from ' + node.ip + ': icmp_seq=' + s + ' ttl=64 time=' + ms + ' ms');
+    }
+    addLine('--- ' + node.name + ' ping statistics ---', 'system');
+    addLine('4 packets transmitted, 4 received, 0% packet loss');
+  }
+
+  function catMotd() {
+    blank();
+    addLine('  Welcome to BlackRoad OS', 'info');
+    addLine('  -----------------------', 'system');
+    blank();
+    addLine('  Pick up your agent.');
+    addLine('  Ride the BlackRoad together.');
+    addLine('  Remember the Road. Pave Tomorrow.');
+    blank();
+    addLine('  "The Prompt Legend of All Time."', 'system');
+    blank();
+    addLine('  Sovereign AI. Local-first. Every device is a Roadie.', 'system');
+    addLine('  35 agents | 7 nodes | 275+ repos | 18 domains', 'system');
+    blank();
+  }
+
+  function catReadme() {
+    blank();
+    addLine('  # BlackRoad OS', 'info');
+    blank();
+    addLine('  BlackRoad OS is a sovereign AI operating system built on');
+    addLine('  local-first infrastructure. Every device is a Roadie.');
+    blank();
+    addLine('  The fleet runs on Raspberry Pi nodes, DigitalOcean droplets,');
+    addLine('  and 2x Hailo-8 accelerators (52 TOPS). Self-hosted Git (Gitea),');
+    addLine('  self-hosted AI (Ollama), self-hosted DNS (PowerDNS), self-hosted');
+    addLine('  TLS edge (Caddy), self-hosted object storage (MinIO), and a');
+    addLine('  full WireGuard mesh connecting every node.');
+    blank();
+    addLine('  Founded by Alexa Louise Amundson. Delaware C-Corp.');
+    addLine('  BlackRoad OS, Inc. -- Pave Tomorrow.');
+    blank();
+    addLine('  https://blackroad.io', 'info');
+    blank();
+  }
+
+  /* ── Boot sequence ── */
+  async function boot() {
+    var lines = [
+      { text: '[boot] BlackRoad OS v1.0.0 kernel loading...', cls: 'system', delay: 80 },
+      { text: '[boot] Initializing WireGuard mesh (12/12 peers)', cls: 'system', delay: 120 },
+      { text: '[boot] Mounting fleet nodes: Alice, Octavia, Lucidia, Gematria, Anastasia', cls: 'system', delay: 100 },
+      { text: '[boot] Loading 35 agents into memory', cls: 'system', delay: 90 },
+      { text: '[boot] Hailo-8 accelerators online (52 TOPS)', cls: 'system', delay: 70 },
+      { text: '[boot] System ready. Welcome, Alexa.', cls: 'info', delay: 150 },
+    ];
+
+    for (var i = 0; i < lines.length; i++) {
+      await delay(lines[i].delay);
+      addLine(lines[i].text, lines[i].cls);
+      scroll();
+    }
+    await delay(200);
+    blank();
+    addLine("Type 'help' for available commands.", 'system');
+    blank();
+    scroll();
+  }
+
+  function delay(ms) {
+    return new Promise(function (r) { setTimeout(r, ms); });
+  }
+
+  /* ── Input handling ── */
+  inputEl.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') {
+      var val = inputEl.value;
+      inputEl.value = '';
+      exec(val);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (histIdx > 0) {
+        histIdx--;
+        inputEl.value = history[histIdx];
+        // move cursor to end
+        setTimeout(function(){ inputEl.selectionStart = inputEl.selectionEnd = inputEl.value.length; }, 0);
+      }
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (histIdx < history.length - 1) {
+        histIdx++;
+        inputEl.value = history[histIdx];
       } else {
-        currentDirectory = dir.startsWith('~') ? dir : `${currentDirectory}/${dir}`;
-      }
-      promptDisplay.textContent = `${currentUser?.name || 'guest'}@blackroad:${currentDirectory}$`;
-    }
-
-    async function updateStats() {
-      try {
-        const stats = await window.blackroad.getSystemStats();
-        document.getElementById('agentCount').textContent = stats.active_agents;
-        document.getElementById('userCount').textContent = stats.total_users;
-        document.getElementById('uptime').textContent = stats.uptime;
-      } catch (error) {
-        // Ignore if API is down
+        histIdx = history.length;
+        inputEl.value = '';
       }
     }
+  });
 
-    // Input handling
-    terminalInput.addEventListener('keydown', async (e) => {
-      if (e.key === 'Enter') {
-        const command = terminalInput.value;
-        terminalInput.value = '';
-        await executeCommand(command);
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        if (historyIndex > 0) {
-          historyIndex--;
-          terminalInput.value = commandHistory[historyIndex];
-        }
-      } else if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        if (historyIndex < commandHistory.length - 1) {
-          historyIndex++;
-          terminalInput.value = commandHistory[historyIndex];
-        } else {
-          historyIndex = commandHistory.length;
-          terminalInput.value = '';
-        }
-      } else if (e.key === 'Tab') {
-        e.preventDefault();
-        // Could add autocomplete here
-      }
-    });
+  // Keep focus on input
+  document.addEventListener('click', function () {
+    inputEl.focus();
+  });
 
-    // Keep input focused
-    document.addEventListener('click', () => {
-      terminalInput.focus();
-    });
-
-    // Initialize on load
-    init();
-
-    // Update stats every 10 seconds
-    setInterval(updateStats, 10000);
-  </script>
+  // Start
+  boot();
+})();
+</script>
 </body>
 </html>

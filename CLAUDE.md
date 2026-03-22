@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-BlackRoad OS is an AI-powered operating system platform serving a static frontend via GitHub Pages at **blackroad.io** with a FastAPI backend. The project combines a web dashboard for managing 30,000 AI agents, a blockchain explorer (RoadChain), crypto wallet integrations, payment processing (Stripe), and the "Lucidia" AI consciousness framework.
+BlackRoad OS is an AI-powered operating system platform serving a static frontend via GitHub Pages at **blackroad.io** with a FastAPI backend. The project combines a web dashboard for managing 35 AI agents, a blockchain explorer (RoadChain), crypto wallet integrations, payment processing (Stripe), and the "Lucidia" AI consciousness framework.
 
 **Repository:** `blackboxprogramming/blackroad.io`
 **License:** MIT

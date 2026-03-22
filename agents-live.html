@@ -3,209 +3,561 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Agents Dashboard - BlackRoad</title>
+  <title>BlackRoad Agents — Live Directory</title>
+  <meta name="description" content="Live agent directory for BlackRoad OS. Monitor AI agents, fleet nodes, and system health in real time.">
+  <meta property="og:title" content="BlackRoad Agents — Live Directory">
+  <meta property="og:description" content="Real-time AI agent monitoring for BlackRoad OS.">
+  <meta property="og:image" content="https://images.blackroad.io/pixel-art/br-road-logo.png">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/png" href="https://images.blackroad.io/pixel-art/br-road-logo.png">
+  <link rel="apple-touch-icon" href="https://images.blackroad.io/pixel-art/br-road-logo.png">
+  <link rel="stylesheet" href="/_shared/design.css">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    :root { --gradient: linear-gradient(135deg, #FF9D00, #FF6B00, #FF0066, #D600AA, #7700FF, #0066FF); }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #02030a;
-      color: white;
-      min-height: 100vh;
-    }
-    .navbar {
-      background: rgba(0,0,0,0.5);
-      backdrop-filter: blur(20px);
-      padding: 16px 32px;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .navbar h1 {
-      background: var(--gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      font-size: 24px;
-      font-weight: 900;
-    }
-    .user-badge {
-      background: rgba(255,255,255,0.1);
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-size: 14px;
-    }
-    .container {
+    /* ── Page Layout ── */
+    .page-wrap {
       max-width: 1200px;
       margin: 0 auto;
-      padding: 48px 32px;
+      padding: 0 var(--sp-lg);
     }
-    .hero {
-      text-align: center;
-      padding: 48px 0;
+
+    /* ── Header Section ── */
+    .agents-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: var(--sp-md);
+      padding: var(--sp-xl) 0 var(--sp-lg);
     }
-    .hero h2 {
-      font-size: 56px;
-      margin-bottom: 24px;
+    .agents-header-left {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-md);
     }
-    .feature-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 24px;
-      margin: 48px 0;
-    }
-    .feature-card {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 16px;
-      padding: 24px;
-      transition: all 0.3s;
-    }
-    .feature-card:hover {
-      transform: translateY(-4px);
-      border-color: #7700FF;
-      background: rgba(255,255,255,0.08);
-    }
-    .feature-card h3 {
-      font-size: 20px;
-      margin-bottom: 12px;
-    }
-    .data-display {
-      background: rgba(0,0,0,0.3);
-      border-radius: 12px;
-      padding: 24px;
-      margin: 24px 0;
-      font-family: monospace;
-      font-size: 14px;
-      max-height: 400px;
-      overflow-y: auto;
-    }
-    button {
-      padding: 12px 24px;
-      border-radius: 8px;
-      border: none;
-      background: var(--gradient);
-      color: white;
+    .agent-count {
+      font-family: var(--font-mono);
+      font-size: 2.5rem;
       font-weight: 700;
-      cursor: pointer;
-      transition: transform 0.2s;
-      margin: 8px;
     }
-    button:hover { transform: scale(1.05); }
-    .status {
-      display: inline-block;
-      padding: 4px 12px;
-      border-radius: 12px;
-      font-size: 12px;
-      font-weight: 600;
+    .agent-count-label {
+      font-size: 0.85rem;
+      color: var(--subtle);
     }
-    .status.online { background: rgba(0,255,136,0.2); color: #00ff88; }
-    .status.offline { background: rgba(255,0,102,0.2); color: #ff0066; }
-    .payment-banner {
-      margin-top: 48px;
-      padding: 24px;
-      background: rgba(255,255,255,0.05);
-      border-radius: 16px;
+
+    /* ── Search Bar ── */
+    .search-wrap {
+      position: relative;
+      max-width: 360px;
+      width: 100%;
+    }
+    .search-wrap svg {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      width: 16px;
+      height: 16px;
+    }
+    .search-input {
+      width: 100%;
+      padding: 10px 14px 10px 36px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-input);
+      color: var(--white);
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .search-input::placeholder { color: var(--muted); }
+    .search-input:focus { border-color: var(--border-hover); }
+
+    /* ── Agent Grid ── */
+    .agents-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--sp-md);
+      padding-bottom: var(--sp-xl);
+    }
+    @media (max-width: 900px) {
+      .agents-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 560px) {
+      .agents-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── Agent Card ── */
+    .agent-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: var(--sp-lg);
+      transition: border-color 0.2s, transform 0.2s var(--ease-spring);
+    }
+    .agent-card:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-2px);
+    }
+    .agent-card-top {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .agent-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .agent-name {
+      font-family: var(--font-headline);
+      font-weight: 700;
+      font-size: 1rem;
+    }
+    .agent-role {
+      font-size: 0.8rem;
+      color: var(--subtle);
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+    .agent-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: var(--radius-pill);
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .agent-status-badge.active {
+      background: rgba(34, 197, 94, 0.12);
+      color: #22c55e;
+    }
+    .agent-status-badge.idle {
+      background: rgba(245, 158, 11, 0.12);
+      color: #f59e0b;
+    }
+    .agent-status-badge.offline {
+      background: rgba(239, 68, 68, 0.12);
+      color: #ef4444;
+    }
+    .agent-status-badge.standby {
+      background: rgba(100, 116, 139, 0.12);
+      color: #94a3b8;
+    }
+
+    /* ── Fleet Nodes ── */
+    .fleet-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--sp-md);
+      padding-bottom: var(--sp-xl);
+    }
+    @media (max-width: 900px) {
+      .fleet-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 560px) {
+      .fleet-grid { grid-template-columns: 1fr; }
+    }
+    .node-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: var(--sp-lg);
+    }
+    .node-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .node-name {
+      font-family: var(--font-headline);
+      font-weight: 700;
+      font-size: 1rem;
+    }
+    .node-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .node-stat-label {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+    }
+    .node-stat-value {
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      color: var(--secondary);
+    }
+
+    /* ── Skeleton Cards ── */
+    .skeleton-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: var(--sp-lg);
+    }
+    .skel-line {
+      height: 14px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+    .skel-line.w60 { width: 60%; }
+    .skel-line.w80 { width: 80%; }
+    .skel-line.w40 { width: 40%; }
+    .skel-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-bottom: 10px;
+    }
+
+    /* ── Empty State ── */
+    .empty-state {
+      grid-column: 1 / -1;
       text-align: center;
+      padding: var(--sp-xl);
+      color: var(--muted);
+      font-size: 0.9rem;
     }
-    .crypto-address {
-      font-family: monospace;
-      background: rgba(0,0,0,0.3);
-      padding: 12px;
-      border-radius: 8px;
-      margin-top: 12px;
-      font-size: 13px;
-      word-break: break-all;
+
+    /* ── Section Heading ── */
+    .section-head {
+      padding: var(--sp-lg) 0 var(--sp-md);
+    }
+
+    /* ── Error Banner ── */
+    .error-banner {
+      background: rgba(239, 68, 68, 0.08);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      border-radius: var(--radius-card);
+      padding: var(--sp-md) var(--sp-lg);
+      color: #fca5a5;
+      font-size: 0.85rem;
+      margin-bottom: var(--sp-md);
+      display: none;
+    }
+    .error-banner.visible { display: block; }
+
+    /* ── Updated timestamp ── */
+    .last-updated {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--muted);
     }
   </style>
 </head>
 <body>
-  <div class="navbar">
-    <h1>AI Agents Dashboard</h1>
-    <div class="user-badge" id="userBadge">Guest</div>
-  </div>
-  
-  <div class="container">
-    <div class="hero">
-      <h2>AI Agents Dashboard</h2>
-      <span class="status" id="apiStatus">Connecting...</span>
+
+  <!-- Nav -->
+  <nav class="br-nav">
+    <a href="/" class="nav-brand">
+      <div class="spectrum-mark">
+        <span></span><span></span><span></span><span></span><span></span><span></span>
+      </div>
+      BlackRoad Agents
+    </a>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/dashboard.html">Dashboard</a>
+      <a href="/chat.html">Chat</a>
+    </div>
+  </nav>
+
+  <div class="grad-bar"></div>
+
+  <main class="page-wrap">
+
+    <!-- Error Banner -->
+    <div class="error-banner" id="errorBanner"></div>
+
+    <!-- Header -->
+    <div class="agents-header">
+      <div class="agents-header-left">
+        <div>
+          <div class="agent-count" id="agentCount">--</div>
+          <div class="agent-count-label">Agents Online</div>
+        </div>
+        <span class="live-indicator" id="liveIndicator">Live</span>
+      </div>
+      <div class="search-wrap">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" class="search-input" id="searchInput" placeholder="Filter by name or role...">
+      </div>
     </div>
 
-    <div class="feature-grid">
-      <div class="feature-card"><h3>✓</h3><p>30,000 AI agents</p></div>
-      <div class="feature-card"><h3>✓</h3><p>Real-time monitoring</p></div>
-      <div class="feature-card"><h3>✓</h3><p>Agent spawning</p></div>
-      <div class="feature-card"><h3>✓</h3><p>Task delegation</p></div>
+    <div class="last-updated" id="lastUpdated"></div>
+
+    <!-- Agent Cards -->
+    <div class="section-head">
+      <div class="section-label">Named Agents</div>
+    </div>
+    <div class="agents-grid" id="agentsGrid">
+      <!-- Skeleton loading -->
+      <div class="skeleton-card"><div class="skel-dot skeleton"></div><div class="skel-line w60 skeleton"></div><div class="skel-line w80 skeleton"></div><div class="skel-line w40 skeleton"></div></div>
+      <div class="skeleton-card"><div class="skel-dot skeleton"></div><div class="skel-line w60 skeleton"></div><div class="skel-line w80 skeleton"></div><div class="skel-line w40 skeleton"></div></div>
+      <div class="skeleton-card"><div class="skel-dot skeleton"></div><div class="skel-line w60 skeleton"></div><div class="skel-line w80 skeleton"></div><div class="skel-line w40 skeleton"></div></div>
+      <div class="skeleton-card"><div class="skel-dot skeleton"></div><div class="skel-line w60 skeleton"></div><div class="skel-line w80 skeleton"></div><div class="skel-line w40 skeleton"></div></div>
+      <div class="skeleton-card"><div class="skel-dot skeleton"></div><div class="skel-line w60 skeleton"></div><div class="skel-line w80 skeleton"></div><div class="skel-line w40 skeleton"></div></div>
+      <div class="skeleton-card"><div class="skel-dot skeleton"></div><div class="skel-line w60 skeleton"></div><div class="skel-line w80 skeleton"></div><div class="skel-line w40 skeleton"></div></div>
     </div>
 
-    <div class="data-display" id="dataDisplay">
-      <div style="opacity: 0.5;">Connecting to API...</div>
+    <div class="grad-bar"></div>
+
+    <!-- Fleet Nodes -->
+    <div class="section-head">
+      <div class="section-label">Fleet Nodes</div>
+      <div class="section-title">Infrastructure</div>
+    </div>
+    <div class="fleet-grid" id="fleetGrid">
+      <div class="skeleton-card"><div class="skel-line w60 skeleton"></div><div class="skel-line w80 skeleton"></div><div class="skel-line w40 skeleton"></div></div>
+      <div class="skeleton-card"><div class="skel-line w60 skeleton"></div><div class="skel-line w80 skeleton"></div><div class="skel-line w40 skeleton"></div></div>
+      <div class="skeleton-card"><div class="skel-line w60 skeleton"></div><div class="skel-line w80 skeleton"></div><div class="skel-line w40 skeleton"></div></div>
     </div>
 
-    <button onclick="loadData()">Refresh Data</button>
-    <button onclick="window.location.href='/'">Back to Home</button>
+  </main>
 
-    <div class="payment-banner">
-      <h3>💸 Support BlackRoad</h3>
-      <a href="https://krak.app/AAAAAAAA" target="_blank" style="display: inline-block; padding: 12px 24px; background: var(--gradient); color: white; text-decoration: none; border-radius: 8px; font-weight: 700; margin: 8px;">Send via Krak →</a>
-      <div class="crypto-address"><strong>BTC:</strong> 3NJYuq8KA1xBea6JNg32XgDwjpvLkrR5VH</div>
+  <div class="grad-bar"></div>
+
+  <footer>
+    <span>&copy; 2025 BlackRoad OS, Inc. All rights reserved.</span>
+    <div class="flex gap-lg">
+      <a href="/">Home</a>
+      <a href="/dashboard.html">Dashboard</a>
+      <a href="/chat.html">Chat</a>
+      <a href="https://github.com/BlackRoad-OS" target="_blank" rel="noopener">GitHub</a>
     </div>
-  </div>
+  </footer>
 
   <script>
-    const API_BASE = 'https://core.blackroad.systems';
-    const ENDPOINT = '/api/agents';
-    let authToken = localStorage.getItem('authToken');
+    const STATS_URL = 'https://blackroad-live-stats.amundsonalexa.workers.dev/api/stats';
+    const AGENTS_URL = 'https://blackroad-live-stats.amundsonalexa.workers.dev/api/agents';
 
-    async function checkAuth() {
-      if (!authToken) return;
-      try {
-        const response = await fetch(`${API_BASE}/api/auth/me`, {
-          headers: { 'Authorization': `Bearer ${authToken}` }
-        });
-        if (response.ok) {
-          const user = await response.json();
-          document.getElementById('userBadge').textContent = user.username;
-        }
-      } catch (error) {
-        console.error('Auth check failed:', error);
-      }
+    let allAgents = [];
+    let fleetNodes = [];
+    let statsData = null;
+    let pollTimer = null;
+
+    const $agentsGrid = document.getElementById('agentsGrid');
+    const $fleetGrid = document.getElementById('fleetGrid');
+    const $agentCount = document.getElementById('agentCount');
+    const $searchInput = document.getElementById('searchInput');
+    const $errorBanner = document.getElementById('errorBanner');
+    const $lastUpdated = document.getElementById('lastUpdated');
+    const $liveIndicator = document.getElementById('liveIndicator');
+
+    // ── Fetch helpers ──
+
+    async function fetchStats() {
+      const res = await fetch(STATS_URL);
+      if (!res.ok) throw new Error('Stats endpoint returned ' + res.status);
+      return res.json();
     }
 
-    async function loadData() {
-      const statusEl = document.getElementById('apiStatus');
-      const dataEl = document.getElementById('dataDisplay');
-      
-      statusEl.className = 'status';
-      statusEl.textContent = 'Loading...';
-      
+    async function fetchAgents() {
+      const res = await fetch(AGENTS_URL);
+      if (!res.ok) throw new Error('Agents endpoint returned ' + res.status);
+      return res.json();
+    }
+
+    // ── Rendering ──
+
+    function statusClass(status) {
+      if (!status) return 'standby';
+      const s = status.toLowerCase();
+      if (s === 'active' || s === 'online' || s === 'running') return 'active';
+      if (s === 'idle' || s === 'waiting' || s === 'sleeping') return 'idle';
+      if (s === 'offline' || s === 'down' || s === 'error') return 'offline';
+      return 'standby';
+    }
+
+    function renderAgentCard(agent) {
+      const color = agent.color || '#737373';
+      const cls = statusClass(agent.status);
+      const statusText = agent.status || 'standby';
+      return `<div class="agent-card" data-name="${(agent.name || '').toLowerCase()}" data-role="${(agent.role || '').toLowerCase()}">
+        <div class="agent-card-top">
+          <span class="agent-dot" style="background:${color};box-shadow:0 0 6px ${color}55"></span>
+          <span class="agent-name">${escapeHtml(agent.name || 'Unknown')}</span>
+        </div>
+        <div class="agent-role">${escapeHtml(agent.role || agent.description || 'Agent')}</div>
+        <span class="agent-status-badge ${cls}">${escapeHtml(statusText)}</span>
+      </div>`;
+    }
+
+    function renderAgents(filter) {
+      const q = (filter || '').toLowerCase().trim();
+      let visible = allAgents;
+      if (q) {
+        visible = allAgents.filter(a =>
+          (a.name || '').toLowerCase().includes(q) ||
+          (a.role || '').toLowerCase().includes(q) ||
+          (a.description || '').toLowerCase().includes(q)
+        );
+      }
+      if (visible.length === 0) {
+        $agentsGrid.innerHTML = '<div class="empty-state">No agents match your filter.</div>';
+        return;
+      }
+      $agentsGrid.innerHTML = visible.map(renderAgentCard).join('');
+    }
+
+    function renderFleetNodes() {
+      if (!fleetNodes.length) {
+        $fleetGrid.innerHTML = '<div class="empty-state">No fleet data available.</div>';
+        return;
+      }
+      $fleetGrid.innerHTML = fleetNodes.map(node => {
+        const dotCls = node.online !== false ? 'live' : 'offline';
+        const temp = node.temp != null ? node.temp + 'C' : '--';
+        const load = node.load != null ? node.load : '--';
+        const disk = node.disk != null ? node.disk + '%' : '--';
+        const services = node.services != null ? node.services : '--';
+        return `<div class="node-card">
+          <div class="node-card-header">
+            <span class="node-name">${escapeHtml(node.name || node.hostname || 'Node')}</span>
+            <span class="status-dot ${dotCls}"></span>
+          </div>
+          <div class="node-stats">
+            <div>
+              <div class="node-stat-label">Services</div>
+              <div class="node-stat-value">${services}</div>
+            </div>
+            <div>
+              <div class="node-stat-label">Temp</div>
+              <div class="node-stat-value">${temp}</div>
+            </div>
+            <div>
+              <div class="node-stat-label">Load</div>
+              <div class="node-stat-value">${load}</div>
+            </div>
+            <div>
+              <div class="node-stat-label">Disk</div>
+              <div class="node-stat-value">${disk}</div>
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    function escapeHtml(str) {
+      const d = document.createElement('div');
+      d.textContent = str;
+      return d.innerHTML;
+    }
+
+    function showError(msg) {
+      $errorBanner.textContent = msg;
+      $errorBanner.classList.add('visible');
+    }
+
+    function hideError() {
+      $errorBanner.classList.remove('visible');
+    }
+
+    function updateTimestamp() {
+      const now = new Date();
+      $lastUpdated.textContent = 'Updated ' + now.toLocaleTimeString();
+    }
+
+    // ── Data Loading ──
+
+    async function loadAll() {
       try {
-        const response = await fetch(`${API_BASE}${ENDPOINT}`, {
-          headers: {
-            'Content-Type': 'application/json',
-            ...(authToken && { 'Authorization': `Bearer ${authToken}` })
+        const [stats, agentsRes] = await Promise.allSettled([fetchStats(), fetchAgents()]);
+
+        hideError();
+
+        // Process stats
+        if (stats.status === 'fulfilled' && stats.value) {
+          statsData = stats.value;
+          const named = statsData.agents?.named || statsData.agents || [];
+
+          // Extract fleet nodes if present
+          if (statsData.fleet || statsData.nodes || statsData.infrastructure) {
+            const raw = statsData.fleet || statsData.nodes || statsData.infrastructure;
+            fleetNodes = Array.isArray(raw) ? raw : Object.values(raw);
           }
-        });
-        
-        if (response.ok) {
-          const data = await response.json();
-          statusEl.className = 'status online';
-          statusEl.textContent = 'Online';
-          dataEl.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
-        } else {
-          throw new Error(`HTTP ${response.status}`);
+
+          // Named agents from stats
+          if (Array.isArray(named)) {
+            allAgents = named;
+          } else if (typeof named === 'object') {
+            allAgents = Object.entries(named).map(([key, val]) => {
+              if (typeof val === 'object') return { name: val.name || key, ...val };
+              return { name: key, role: val };
+            });
+          }
         }
-      } catch (error) {
-        statusEl.className = 'status offline';
-        statusEl.textContent = 'Offline';
-        dataEl.innerHTML = `<div style="color: #ff6b6b;">Error: ${error.message}</div>
-          <div style="opacity: 0.7; margin-top: 12px;">Backend API may be starting up or unavailable.</div>`;
+
+        // Merge full agent list if available
+        if (agentsRes.status === 'fulfilled' && agentsRes.value) {
+          const full = agentsRes.value;
+          const agentList = Array.isArray(full) ? full : (full.agents || []);
+          if (agentList.length > 0) {
+            // Merge: prefer full list, overlay stats data
+            const nameMap = new Map(allAgents.map(a => [(a.name || '').toLowerCase(), a]));
+            agentList.forEach(a => {
+              const key = (a.name || '').toLowerCase();
+              if (!nameMap.has(key)) {
+                allAgents.push(a);
+              } else {
+                const existing = nameMap.get(key);
+                Object.assign(existing, a, { name: existing.name || a.name });
+              }
+            });
+          }
+
+          // Extract fleet from agents response if not already present
+          if (!fleetNodes.length) {
+            const fn = full.fleet || full.nodes || full.infrastructure;
+            if (fn) {
+              fleetNodes = Array.isArray(fn) ? fn : Object.values(fn);
+            }
+          }
+        }
+
+        // Update count
+        const onlineCount = allAgents.filter(a => statusClass(a.status) === 'active').length;
+        $agentCount.textContent = onlineCount > 0 ? onlineCount : allAgents.length;
+
+        // Render
+        renderAgents($searchInput.value);
+        renderFleetNodes();
+        updateTimestamp();
+
+        // If both failed
+        if (stats.status === 'rejected' && agentsRes.status === 'rejected') {
+          throw stats.reason || agentsRes.reason;
+        }
+
+      } catch (err) {
+        showError('Failed to load agent data: ' + err.message);
+        $liveIndicator.style.color = '#ef4444';
+        $liveIndicator.textContent = 'Disconnected';
       }
     }
 
-    checkAuth();
-    loadData();
+    // ── Search ──
+
+    $searchInput.addEventListener('input', () => {
+      renderAgents($searchInput.value);
+    });
+
+    // ── Init ──
+
+    loadAll();
+    pollTimer = setInterval(loadAll, 10000);
   </script>
-  <script src="/blackroad-api.js"></script>
 </body>
 </html>

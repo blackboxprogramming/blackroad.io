@@ -45,7 +45,7 @@ if (strpos($uri, '/auth/me') !== false) {
 if (strpos($uri, '/ai-chat/chat') !== false && $method === 'POST') {
     $data = json_decode(file_get_contents('php://input'), true);
     $responses = [
-        "That's interesting! I'm powered by 30,000 AI agents.",
+        "That's interesting! I'm powered by 35 AI agents.",
         "Great question! Let me process that with my neural network.",
         "BlackRoad OS is ready to help. What else would you like to know?",
         "I'm here to assist! Ask me anything."

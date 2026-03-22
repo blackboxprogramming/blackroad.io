@@ -6,7 +6,7 @@ Complete FastAPI backend for BlackRoad Operating System.
 
 - **Authentication**: JWT-based auth with register/login
 - **AI Chat**: Conversation management with AI responses
-- **Agents**: Spawn, list, and manage 30,000+ AI agents
+- **Agents**: Spawn, list, and manage 35 AI agents
 - **Blockchain**: RoadChain transactions and blocks
 - **Payments**: Stripe checkout integration
 - **Files**: Cloud file management
