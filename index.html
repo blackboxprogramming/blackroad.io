@@ -545,10 +545,38 @@
       <div class="section-label">Proprietary</div>
       <h2>Build the future<br>on your own terms.</h2>
       <p>BlackRoad OS is proprietary and powerful. Your AI. Your hardware. Your rules. Any use of this multi-agent architecture requires attribution to BlackRoad OS, Inc.</p>
-      <div style="display:flex;gap:var(--sp-md);justify-content:center;flex-wrap:wrap;">
+      <div style="display:flex;gap:var(--sp-md);justify-content:center;flex-wrap:wrap;margin-bottom:var(--sp-xl);">
         <a href="https://search.blackroad.io" class="btn-primary">Try it Free →</a>
         <a href="https://roundtrip.blackroad.io" class="btn-ghost">Meet 200 AI Agents</a>
       </div>
+      <div style="max-width:400px;margin:0 auto;">
+        <p style="font-family:var(--font-mono);font-size:0.75rem;color:var(--muted);margin-bottom:var(--sp-sm);text-align:center;">Get updates — no spam, just milestones.</p>
+        <form id="newsletter-form" style="display:flex;gap:8px;">
+          <input type="email" id="nl-email" placeholder="you@email.com" required style="flex:1;padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--white);font-size:0.85rem;font-family:inherit;">
+          <button type="submit" style="background:var(--grad);color:var(--white);border:none;padding:10px 18px;border-radius:8px;font-weight:700;font-size:0.85rem;cursor:pointer;">Subscribe</button>
+        </form>
+        <p id="nl-status" style="font-size:0.7rem;color:var(--muted);text-align:center;margin-top:6px;"></p>
+      </div>
+      <script>
+      document.getElementById('newsletter-form').addEventListener('submit',function(e){
+        e.preventDefault();
+        var email=document.getElementById('nl-email').value;
+        var status=document.getElementById('nl-status');
+        status.textContent='Subscribing...';
+        fetch('https://roundtrip.blackroad.io/api/chat',{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({agent:'newsletter',message:'[SUBSCRIBE] '+email,channel:'general'})
+        }).then(function(){
+          status.textContent='Subscribed! Welcome to the road.';
+          status.style.color='#22c55e';
+          document.getElementById('nl-email').value='';
+        }).catch(function(){
+          status.textContent='Failed — try again.';
+          status.style.color='#ef4444';
+        });
+      });
+      </script>
     </div>
   </section>
 
@@ -560,7 +588,7 @@
       <a href="https://chat.blackroad.io" style="color:var(--muted);transition:color 0.2s" onmouseover="this.style.color='#fff'" onmouseout="this.style.color=''">Chat</a>
       <a href="https://search.blackroad.io" style="color:var(--muted);transition:color 0.2s" onmouseover="this.style.color='#fff'" onmouseout="this.style.color=''">Search</a>
       <a href="https://roundtrip.blackroad.io" style="color:var(--muted);transition:color 0.2s" onmouseover="this.style.color='#fff'" onmouseout="this.style.color=''">Agents</a>
-      <a href="/blogs" style="color:var(--muted);transition:color 0.2s" onmouseover="this.style.color='#fff'" onmouseout="this.style.color=''">Blog</a>
+      <a href="/blog" style="color:var(--muted);transition:color 0.2s" onmouseover="this.style.color='#fff'" onmouseout="this.style.color=''">Blog</a>
       <a href="/docs" style="color:var(--muted);transition:color 0.2s" onmouseover="this.style.color='#fff'" onmouseout="this.style.color=''">Docs</a>
       <a href="/changelog" style="color:var(--muted);transition:color 0.2s" onmouseover="this.style.color='#fff'" onmouseout="this.style.color=''">Changelog</a>
       <a href="/terms" style="color:var(--muted);transition:color 0.2s" onmouseover="this.style.color='#fff'" onmouseout="this.style.color=''">Terms</a>
